@@ -1,11 +1,11 @@
+from pydantic import ValidationError
 from typing import Dict, Any, Callable
 from termcolor import cprint
 
 
-# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█▀▄░█▀▄░█▀█░█▀▄
-# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█▀▄░█▀▄░█░█░█▀▄
-# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀▀▀░▀░▀░▀░▀░▀▀▀░▀░▀
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█▀▄░█▀▄░█▀█░█▀▄░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█▀▄░█▀▄░█░█░█▀▄░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀▀▀░▀░▀░▀░▀░▀▀▀░▀░▀░░
 class CallMeError(Exception):
     def __init__(self, message: str, **context: str):
         super().__init__()
@@ -34,6 +34,18 @@ class CallMeError(Exception):
                 try:
                     value = func(*args, **kwargs)
                     return value
+
+                except ValidationError as e:
+                    err = e.errors()[0]
+                    what = f"Model validation: {err['type']} -> {err['msg']}\n"
+                    what += f"""     '{err["loc"]}'\n"""
+                    what += f"""     '{err["input"]}'"""
+                    raise CallMeError("", what=what, where=description)
+
+                except FileNotFoundError as e:
+                    what = "File not found!\n"
+                    what += f"     -> '{str(e).split()[7]}'"
+                    raise CallMeError("", what=what, where=description)
 
                 except Exception as e:
                     raise CallMeError("", what=str(e), where=description)

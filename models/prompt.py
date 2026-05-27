@@ -1,0 +1,23 @@
+import json
+from error.error import CallMeError
+from typing import Annotated, List
+from pydantic import BaseModel, Field
+
+
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀█░█▀▄░█▀█░█▄█░█▀█░▀█▀░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█▀▄░█░█░█░█░█▀▀░░█░░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░░▀░▀░▀▀▀░▀░▀░▀░░░░▀░░░
+class Prompt(BaseModel):
+    text: Annotated[str, Field(min_length=3, alias="prompt")]
+
+
+# ░░░░░░░░░░░░░░░░░░░░░░░░░█▀█░█▀█░█▀▄░█▀▀░█▀▀░░░█▀█░█▀▄░█▀█░█▄█░█▀█░▀█▀░█▀▀░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█▀█░█▀▄░▀▀█░█▀▀░░░█▀▀░█▀▄░█░█░█░█░█▀▀░░█░░▀▀█░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░▀░░░▀░▀░▀░▀░▀▀▀░▀▀▀░░░▀░░░▀░▀░▀▀▀░▀░▀░▀░░░░▀░░▀▀▀░░
+@CallMeError.catch("Input, prompt parser")
+def parse_prompts(path: str) -> List[Prompt]:
+
+    with open(path) as file:
+        json_list = json.loads(file.read())
+        prompts = [Prompt.model_validate(func) for func in json_list]
+        return prompts

@@ -1,4 +1,5 @@
-from function_definintion.function_definition import (
+from models.prompt import parse_prompts
+from models.function_definition import (
     # FunctionDefinition,
     parse_functions,
 )
@@ -16,6 +17,8 @@ if __name__ == "__main__":
         try:
             model = parse_functions(arguments["definitions"])
             print(model)
+            prompts = parse_prompts(arguments["input"])
+            print(prompts)
         except CallMeError as e:
             e.print()
 
