@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█░█░█▀█░█▀▀░▀█▀░▀█▀░█▀█░█▀█░░░█▀▄░█▀▀░█▀▀░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█░█░█░█░█░░░░█░░░█░░█░█░█░█░░░█░█░█▀▀░█▀▀░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀▀▀░▀░▀░░░▀▀░░▀▀▀░▀░░░░
-class FunctionDefinition(BaseModel):
+class FuncDef(BaseModel):
     name: Annotated[str, Field(min_length=3)]
     description: Annotated[str, Field(min_length=3)]
     parameters: Dict[str, Dict[str, str]]
@@ -18,11 +18,9 @@ class FunctionDefinition(BaseModel):
 # ░░░░░░░░░░░░░░░░░█▀▀░█▀█░█▀▄░▀▀█░█▀▀░░░█▀▀░█░█░█░█░█░░░░█░░░█░░█░█░█░█░▀▀█░░
 # ░░░░░░░░░░░░░░░░░▀░░░▀░▀░▀░▀░▀▀▀░▀▀▀░░░▀░░░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀▀▀░▀░▀░▀▀▀░░
 @CallMeError.catch("Function definition parser")
-def parse_functions(path: str) -> List[FunctionDefinition]:
+def parse_functions(path: str) -> List[FuncDef]:
 
     with open(path) as file:
         json_list = json.loads(file.read())
-        functions = [
-            FunctionDefinition.model_validate(func) for func in json_list
-        ]
+        functions = [FuncDef.model_validate(func) for func in json_list]
         return functions
