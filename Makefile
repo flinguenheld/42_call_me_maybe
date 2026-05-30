@@ -1,6 +1,6 @@
 NAME="call_me_maybe.py"
-# CACHE_GOINFRE=--cache-dir "~/goinfre/.cache_call_me/"
-CACHE_GOINFRE=
+CACHE_GOINFRE=--cache-dir "~/goinfre/.cache_call_me/"
+# CACHE_GOINFRE=
 
 install:
 	uv $(CACHE_GOINFRE) sync

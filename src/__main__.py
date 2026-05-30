@@ -5,7 +5,7 @@ from parser_call_me import parse_call_me
 from termcolor import cprint
 from error.error import CallMeError
 from manager.manager import LLMManager
-from manager.constraint import Constraint
+from manager.constraint import Constraint_functions
 
 
 if __name__ == "__main__":
@@ -19,23 +19,27 @@ if __name__ == "__main__":
             fn_defs: List[FuncDef] = parse_functions(arguments["definitions"])
             prompts = parse_prompts(arguments["input"])
 
-            # llm = LLMManager("Add 3 and 2", Constraint(fn_defs))
-            # llm = LLMManager("Greet john", Constraint(fn_defs))
+            # llm = LLMManager("Add 3 and 2", Constraint_functions(fn_defs))
+            llm = LLMManager(
+                "Greet john", Constraint_functions(fn_defs), debug=True
+            )
             # llm = LLMManager(
             #     "What is the sum of 265 and 345?", Constraint(fn_defs)
             # )
             # llm = LLMManager(
-            #     'Replace all numbers in "Hello 34 I\'m 233 years old" with NUMBERS',
-            #     Constraint(fn_defs),
+            #     'Replace all numbers in "Hello 34 I\'m 233 years old"
+            # with NUMBERS',
+            #     Constraint_functions(fn_defs),
             # )
             # llm = LLMManager(
-            #     "Substitute the word 'cat' with 'dog' in 'The cat sat on the mat with another cat'",
-            #     Constraint(fn_defs),
+            #     "Substitute the word 'cat' with 'dog' in 'The
+            # cat sat on the mat with another cat'",
+            #     Constraint_functions(fn_defs),
             # )
-            llm = LLMManager(
-                "It's late, does Novanns have to go to bed ?",
-                Constraint(fn_defs),
-            )
+            # llm = LLMManager(
+            #     "It's late, does Novanns have to go to bed ?",
+            #     Constraint_functions(fn_defs),
+            # )
 
             # llm.next_token()
             # for _ in range(5):

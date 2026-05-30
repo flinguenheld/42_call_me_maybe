@@ -1,14 +1,22 @@
+from termcolor import cprint
 from typing import List, Any
 from dataclasses import dataclass
 from llm_sdk import Small_LLM_Model
-from manager.constraint import Constraint
+from manager.constraint import Constraint_functions
+
+
+def print_debug(debug: bool, txt: str):
+    if debug:
+        for line in txt.splitlines():
+            cprint(f"    -> {line}", "blue")
 
 
 @dataclass()
 class LLMManager:
     prompt: str
-    constraint: Constraint
+    constraint: Constraint_functions
     llm: Small_LLM_Model = Small_LLM_Model()
+    debug: bool = False
 
     def __post_init__(self) -> None:
         self._open_brace_token = self._index_of("{")
@@ -19,7 +27,7 @@ class LLMManager:
         self._prompt_tokens = self.llm.encode(self.prompt)[0].tolist()
 
         self.constraint.encode_names(self.llm.encode)
-        print(self.constraint.encoded)
+        print(self.constraint.encoded_names)
 
         self._real_prompt = f"""
 You are a function calling assistant. Given the following available functions:
@@ -45,10 +53,12 @@ function: """
     def _index_max_value(self, values: List[float]) -> int:
         """Get the index of the maximum value"""
 
-        print("=== look for logits ===")
-        print(self.constraint.authorised_tokens)
-        print(self.llm.decode([t for t in self.constraint.authorised_tokens]))
-        print("=======================")
+        print_debug(
+            self.debug,
+            f"Authorized str:\n{
+                self.llm.decode([t for t in self.constraint.authorised_tokens])
+            } ",
+        )
 
         index = next(iter(self.constraint.authorised_tokens))
         for i in range(1, len(values) - 1):
@@ -66,26 +76,26 @@ function: """
 
         turn = 0
         while True:
-            # FIND A WAY TO SKIP WHEN THERE IS JUST ONE CHOICE LEFT
-            print(f"------------------------------------ trun {turn} ----")
+            print_debug(self.debug, f"---------------------- turn {turn} ---")
             turn += 1
 
-            # Get the index of the maximum
-            self.constraint.next_index()
-            if len(self.constraint.authorised_tokens) == 0:
-                print(f"FOUND : {self.llm.decode(self.constraint.selected)}")
-                break
+            # Update the list of authorized tokens
+            self.constraint.next_column()
 
             logits: List[float] = self.llm.get_logits_from_input_ids(
                 self._real_prompt_encoded
             )
 
             maxi = self._index_max_value(logits)
-            print(
-                f"maxi found: {maxi} -> Decoded -> '{self.llm.decode([maxi])}'"
+            self.constraint.add_current(maxi)
+            print_debug(
+                self.debug,
+                f"token selected: '{maxi}' -> '{self.llm.decode([maxi])}'",
             )
-            # print(self.llm.decode([maxi]), end="")
-            # print(self.llm.decode([maxi]))
-            self.constraint.add_selected(maxi)
+
+            function_name = self.constraint.get_final_choice()
+            if function_name:
+                print_debug(self.debug, f"Function found {function_name} ---")
+                break
 
             self._real_prompt_encoded.append(maxi)
