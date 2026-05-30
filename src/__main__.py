@@ -4,8 +4,8 @@ from models.function_definition import parse_functions, FuncDef
 from parser_call_me import parse_call_me
 from termcolor import cprint
 from error.error import CallMeError
-from manager.manager import LLMManager
-from manager.constraint import Constraint_functions
+from manager.manager_function import LLMManagerFunc
+from manager.constraint_function import Constraint_functions
 
 
 if __name__ == "__main__":
@@ -20,8 +20,10 @@ if __name__ == "__main__":
             prompts = parse_prompts(arguments["input"])
 
             # llm = LLMManager("Add 3 and 2", Constraint_functions(fn_defs))
-            llm = LLMManager(
-                "Greet john", Constraint_functions(fn_defs), debug=True
+            llm = LLMManagerFunc(
+                question="Greet john",
+                constraint=Constraint_functions(fn_defs),
+                debug=True,
             )
             # llm = LLMManager(
             #     "What is the sum of 265 and 345?", Constraint(fn_defs)

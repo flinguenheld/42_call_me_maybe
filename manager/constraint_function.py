@@ -3,6 +3,9 @@ from typing import List, Set, Callable, Dict
 from dataclasses import dataclass, field
 
 
+# ░░░░░░░░░░░░░░░░░█▀▀░█▀█░█▀█░█▀▀░▀█▀░█▀▄░█▀█░▀█▀░█▀█░▀█▀░░░█▀▀░█░█░█▀█░█▀▀░░
+# ░░░░░░░░░░░░░░░░░█░░░█░█░█░█░▀▀█░░█░░█▀▄░█▀█░░█░░█░█░░█░░░░█▀▀░█░█░█░█░█░░░░
+# ░░░░░░░░░░░░░░░░░▀▀▀░▀▀▀░▀░▀░▀▀▀░░▀░░▀░▀░▀░▀░▀▀▀░▀░▀░░▀░░░░▀░░░▀▀▀░▀░▀░▀▀▀░░
 @dataclass()
 class Constraint_functions:
     functions_def: List[FuncDef]
