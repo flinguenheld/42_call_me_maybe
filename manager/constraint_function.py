@@ -1,16 +1,15 @@
-from models.function_definition import FuncDef
-from typing import List, Set, Callable, Dict
+from typing import List, Callable, Dict
 from dataclasses import dataclass, field
+from manager.constraint import Constraint
+from models.function_definition import FuncDef
 
 
 # ░░░░░░░░░░░░░░░░░█▀▀░█▀█░█▀█░█▀▀░▀█▀░█▀▄░█▀█░▀█▀░█▀█░▀█▀░░░█▀▀░█░█░█▀█░█▀▀░░
 # ░░░░░░░░░░░░░░░░░█░░░█░█░█░█░▀▀█░░█░░█▀▄░█▀█░░█░░█░█░░█░░░░█▀▀░█░█░█░█░█░░░░
 # ░░░░░░░░░░░░░░░░░▀▀▀░▀▀▀░▀░▀░▀▀▀░░▀░░▀░▀░▀░▀░▀▀▀░▀░▀░░▀░░░░▀░░░▀▀▀░▀░▀░▀▀▀░░
 @dataclass()
-class Constraint_functions:
-    functions_def: List[FuncDef]
-    current: List[int] = field(default_factory=list)
-    authorised_tokens: Set[int] = field(default_factory=set)
+class Constraint_functions(Constraint):
+    functions_def: List[FuncDef] = field(default_factory=list)
     encoded_names: Dict[str, List[int]] = field(default_factory=dict)
     index: int = -1
 
@@ -35,7 +34,7 @@ class Constraint_functions:
         Then filter the encoded_names to keep only those
         which start with current.
         """
-        self.current.append(new_token)
+        super().add_current(new_token)
 
         new_dict = {}
         for function, tokens in self.encoded_names.items():

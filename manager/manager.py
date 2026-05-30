@@ -1,3 +1,4 @@
+from manager.constraint import Constraint
 from typing import List, Any
 from llm_sdk import Small_LLM_Model
 from utils.utils import print_debug
@@ -10,11 +11,12 @@ from manager.constraint_function import Constraint_functions
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀▀▀░▀▀▀░▀░▀░░░▀░▀░▀░▀░▀░▀░▀░▀░▀▀▀░▀▀▀░▀░▀░░
 @dataclass()
 class LLMManager:
+    llm: Small_LLM_Model
     question: str
     debug: bool
-    constraint: Constraint_functions
+    constraint: Constraint
     prompt: str = ""
-    llm: Small_LLM_Model = Small_LLM_Model()
+    # TODO: ADD IT AS COMMON ATTRIBUTE ????
     prompt_encoded: List[int] = field(default_factory=list)
 
     def __post_init__(self) -> None:
@@ -22,14 +24,11 @@ class LLMManager:
         self._close_brace_token = self._token_of("}")
         self._quote = self._token_of('"')
         self._colon = self._token_of(":")
-        self.constraint.encode_names(self.llm.encode)
+        # self.constraint.encode_names(self.llm.encode)
 
         print_debug(self.debug, self.llm.get_path_to_vocab_file())
         print_debug(self.debug, self.llm.get_path_to_merges_file())
         print_debug(self.debug, self.llm.get_path_to_tokenizer_file())
-
-        self._prompt_encoded = self.llm.encode(self._prompt)[0].tolist()
-        print_debug(self.debug, f"Prompt: '{self._prompt}'")
 
     def _token_of(self, who: str) -> int | Any:
         """Get the token of who"""
