@@ -4,14 +4,13 @@ from utils.utils import print_debug
 from manager.manager import LLMManager
 
 
+# ░░░░░░░░░░░░░░░░░░░░░░░░░█▄█░█▀█░█▀█░░░█▀█░▀█▀░▀█▀░█▀▄░▀█▀░█▀▄░█░█░▀█▀░█▀▀░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░█░█░█▀█░█░█░░░█▀█░░█░░░█░░█▀▄░░█░░█▀▄░█░█░░█░░█▀▀░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░▀░▀░▀░▀░▀░▀░░░▀░▀░░▀░░░▀░░▀░▀░▀▀▀░▀▀░░▀▀▀░░▀░░▀▀▀░░
 @dataclass()
-class LLMManagerAttr(LLMManager):
+class ManagerAttribute(LLMManager):
     def __post_init__(self) -> None:
         super().__post_init__()
-
-        print_debug(self.debug, self.llm.get_path_to_vocab_file())
-        print_debug(self.debug, self.llm.get_path_to_merges_file())
-        print_debug(self.debug, self.llm.get_path_to_tokenizer_file())
 
         self._prompt = """
 <|im_start|>system
@@ -54,7 +53,7 @@ argument to find: "a"
 value:
 """
         # self.constraint.encode_names(self.llm.encode)
-        self._prompt_encoded = self.llm.encode(self._prompt)[0].tolist()
+        self._prompt_encoded = self.llm.encode(self._prompt)
         print_debug(self.debug, f"Prompt: '{self._prompt}'")
 
     def _index_max_value(self, values: List[float]) -> int:
@@ -69,17 +68,15 @@ value:
 
     def next_token(self) -> None:
 
-        print_debug(self.debug, f"end of text token: {self._end_of_text}")
-        print_debug(self.debug, f"151645: {self.llm.decode([151645])}")
+        print_debug(self.debug, f"end of text token: {self.llm.end_of_text}")
+        print_debug(self.debug, f"151645: {self.llm.decode(151645)}")
 
         turn = 0
         while True:
             print_debug(self.debug, f"---------------------- turn {turn} ---")
             turn += 1
 
-            logits: List[float] = self.llm.get_logits_from_input_ids(
-                self._prompt_encoded
-            )
+            logits: List[float] = self.llm.get_logits(self._prompt_encoded)
 
             maxi = self._index_max_value(logits)
             print_debug(
@@ -87,8 +84,7 @@ value:
                 f"token selected: '{maxi}' -> '{self.llm.decode([maxi])}'",
             )
 
-            # TODO GET THIS ONE PROPERLY (<|endoftext|>)
-            if maxi == self._end or maxi == self._end_of_text:
+            if maxi == self.llm.end or maxi == self.llm.end_of_text:
                 break
 
             self._prompt_encoded.append(maxi)

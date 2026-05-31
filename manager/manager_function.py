@@ -1,15 +1,24 @@
+from manager.manager import LLMManager
+from models.function_definition import FuncDef
+from manager.constraint_function import ConstraintFunction
+
 from typing import List
 from dataclasses import dataclass
 from utils.utils import print_debug
-from manager.manager import LLMManager
 
 
-# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▄█░█▀█░█▀█░█▀█░█▀▀░█▀▀░█▀▄░░░█▀▀░█░█░█▀█░█▀▀░░
-# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░█░█▀█░█░█░█▀█░█░█░█▀▀░█▀▄░░░█▀▀░█░█░█░█░█░░░░
-# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░▀░▀░▀░▀░▀░▀░▀░▀▀▀░▀▀▀░▀░▀░░░▀░░░▀▀▀░▀░▀░▀▀▀░░
-@dataclass()
-class LLMManagerFunc(LLMManager):
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▄█░█▀█░█▀█░░░█▀▀░█░█░█▀█░█▀▀░▀█▀░▀█▀░█▀█░█▀█░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░█░█▀█░█░█░░░█▀▀░█░█░█░█░█░░░░█░░░█░░█░█░█░█░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░▀░▀░▀░▀░▀░░░▀░░░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀▀▀░▀░▀░░
+@dataclass
+class ManagerFunction(LLMManager):
+    functions: List[FuncDef]
+
     def __post_init__(self) -> None:
+        super().__post_init__()
+        self.constraint = ConstraintFunction(functions_def=self.functions)
+
+        self.constraint.encode_names(self.llm.encode)
         self._prompt = f"""
 <|im_start|>system
 You are a function calling assistant.
@@ -25,10 +34,8 @@ Give only the FUNCTION NAME:
 <|im_end|>
 <|im_start|>assistant
 function:
-<|im_end|>
 """
-        self.constraint.encode_names(self.llm.encode)
-        self._prompt_encoded = self.llm.encode(self._prompt)[0].tolist()
+        self._prompt_encoded = self.llm.encode(self._prompt)
         print_debug(self.debug, f"Prompt: '{self._prompt}'")
 
     def _index_max_value(self, values: List[float]) -> int:
@@ -62,9 +69,7 @@ function:
             # Update the list of authorized tokens
             self.constraint.next_column()
 
-            logits: List[float] = self.llm.get_logits_from_input_ids(
-                self._prompt_encoded
-            )
+            logits: List[float] = self.llm.get_logits(self._prompt_encoded)
 
             maxi = self._index_max_value(logits)
             self.constraint.add_current(maxi)
