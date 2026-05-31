@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List, Callable, Dict, Set
-from models.function_definition import FuncDef
+
+from src.models.function_definition import ModelFunction
 
 
 # ░░░░░░░░░░░░░░░░░█▀▀░█▀█░█▀█░█▀▀░▀█▀░█▀▄░█▀█░▀█▀░█▀█░▀█▀░░░█▀▀░█░█░█▀█░█▀▀░░
@@ -11,7 +12,7 @@ class ConstraintFunction:
     column: int = -1
     current: List[int] = field(default_factory=list)
     authorised_tokens: Set[int] = field(default_factory=set)
-    functions_def: List[FuncDef] = field(default_factory=list)
+    functions_def: List[ModelFunction] = field(default_factory=list)
     encoded_names: Dict[str, List[int]] = field(default_factory=dict)
 
     def encode_names(self, method: Callable) -> None:

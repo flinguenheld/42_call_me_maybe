@@ -1,6 +1,6 @@
+from termcolor import cprint
 from pydantic import ValidationError
 from typing import Dict, Any, Callable
-from termcolor import cprint
 
 
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█▀▄░█▀▄░█▀█░█▀▄░░

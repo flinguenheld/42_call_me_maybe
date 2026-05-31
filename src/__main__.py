@@ -1,12 +1,12 @@
-from llm_wrapper.llm_wrapper import LLMWrapper
-from manager.manager_attribute import ManagerAttribute
 from typing import List
-from models.prompt import parse_prompts
-from models.function_definition import parse_functions, FuncDef
-from parser_call_me import parse_call_me
 from termcolor import cprint
-from error.error import CallMeError
-from manager.manager_function import ManagerFunction
+from src.error.error import CallMeError
+from src.models.prompt import parse_prompts
+from src.llm_wrapper.llm_wrapper import LLMWrapper
+from src.utils.parser_call_me import parse_call_me
+from src.talker.function import TalkerFunction
+from src.talker.attribute import TalkerAttribute
+from src.models.function_definition import parse_functions, ModelFunction
 
 
 if __name__ == "__main__":
@@ -17,13 +17,15 @@ if __name__ == "__main__":
         exit(1)
     else:
         try:
-            fn_defs: List[FuncDef] = parse_functions(arguments["definitions"])
+            fn_defs: List[ModelFunction] = parse_functions(
+                arguments["definitions"]
+            )
             prompts = parse_prompts(arguments["input"])
 
             llm = LLMWrapper()
 
             # llm = LLMManager("Add 3 and 2", Constraint_functions(fn_defs))
-            manager_func = ManagerFunction(
+            manager_func = TalkerFunction(
                 llm=llm,
                 question="Greet john",
                 functions=fn_defs,
@@ -54,7 +56,7 @@ if __name__ == "__main__":
             print("#########################################################")
             print("#########################################################")
 
-            llm2 = ManagerAttribute(
+            llm2 = TalkerAttribute(
                 llm=llm,
                 question="Greet john",
                 debug=True,

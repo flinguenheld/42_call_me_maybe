@@ -1,13 +1,14 @@
 import json
-from typing import Annotated, Dict, List
-from error.error import CallMeError
 from pydantic import BaseModel, Field
+from typing import Annotated, Dict, List
+
+from src.error.error import CallMeError
 
 
-# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█░█░█▀█░█▀▀░▀█▀░▀█▀░█▀█░█▀█░░░█▀▄░█▀▀░█▀▀░░
-# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█░█░█░█░█░░░░█░░░█░░█░█░█░█░░░█░█░█▀▀░█▀▀░░
-# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀▀▀░▀░▀░░░▀▀░░▀▀▀░▀░░░░
-class FuncDef(BaseModel):
+# ░░░░░░░░░░░░░░░░░░░░░█▄█░█▀█░█▀▄░█▀▀░█░░░░░█▀▀░█░█░█▀█░█▀▀░▀█▀░▀█▀░█▀█░█▀█░░
+# ░░░░░░░░░░░░░░░░░░░░░█░█░█░█░█░█░█▀▀░█░░░░░█▀▀░█░█░█░█░█░░░░█░░░█░░█░█░█░█░░
+# ░░░░░░░░░░░░░░░░░░░░░▀░▀░▀▀▀░▀▀░░▀▀▀░▀▀▀░░░▀░░░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀▀▀░▀░▀░░
+class ModelFunction(BaseModel):
     name: Annotated[str, Field(min_length=3)]
     description: Annotated[str, Field(min_length=3)]
     parameters: Dict[str, Dict[str, str]]
@@ -18,9 +19,9 @@ class FuncDef(BaseModel):
 # ░░░░░░░░░░░░░░░░░█▀▀░█▀█░█▀▄░▀▀█░█▀▀░░░█▀▀░█░█░█░█░█░░░░█░░░█░░█░█░█░█░▀▀█░░
 # ░░░░░░░░░░░░░░░░░▀░░░▀░▀░▀░▀░▀▀▀░▀▀▀░░░▀░░░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀▀▀░▀░▀░▀▀▀░░
 @CallMeError.catch("Function definition parser")
-def parse_functions(path: str) -> List[FuncDef]:
+def parse_functions(path: str) -> List[ModelFunction]:
 
     with open(path) as file:
         json_list = json.loads(file.read())
-        functions = [FuncDef.model_validate(func) for func in json_list]
+        functions = [ModelFunction.model_validate(func) for func in json_list]
         return functions
