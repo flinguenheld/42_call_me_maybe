@@ -9,28 +9,28 @@ from manager.constraint_function import Constraint_functions
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░░█░░░█▄█░░░█▄█░█▀█░█▀█░█▀█░█▀▀░█▀▀░█▀▄░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░░█░░░█░█░░░█░█░█▀█░█░█░█▀█░█░█░█▀▀░█▀▄░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀▀▀░▀▀▀░▀░▀░░░▀░▀░▀░▀░▀░▀░▀░▀░▀▀▀░▀▀▀░▀░▀░░
-@dataclass()
+@dataclass
 class LLMManager:
     llm: Small_LLM_Model
     question: str
-    debug: bool
     constraint: Constraint
+    debug: bool = False
     prompt: str = ""
     # TODO: ADD IT AS COMMON ATTRIBUTE ????
     prompt_encoded: List[int] = field(default_factory=list)
 
+    _end: int = field(init=False)
+    _end_of_text: int = field(init=False)
+
     def __post_init__(self) -> None:
-        self._open_brace_token = self._token_of("{")
-        self._close_brace_token = self._token_of("}")
-        self._quote = self._token_of('"')
-        self._colon = self._token_of(":")
-        # self.constraint.encode_names(self.llm.encode)
+        self._end = self._token_of("<|im_end|>")
+        self._end_of_text = self._token_of("<|endoftext|>")
 
         print_debug(self.debug, self.llm.get_path_to_vocab_file())
         print_debug(self.debug, self.llm.get_path_to_merges_file())
         print_debug(self.debug, self.llm.get_path_to_tokenizer_file())
 
-    def _token_of(self, who: str) -> int | Any:
+    def _token_of(self, who: str) -> int:
         """Get the token of who"""
         return self.llm.encode(who)[0].tolist()[0]
 
