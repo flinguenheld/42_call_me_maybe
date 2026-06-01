@@ -2,7 +2,7 @@ from typing import List
 from dataclasses import dataclass, field
 from llm_sdk.__init__ import Small_LLM_Model
 
-from src.utils.utils import print_debug
+from src.utils.utils import pdebug
 
 
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░░█░░░█▄█░░░█░█░█▀▄░█▀█░█▀█░█▀█░█▀▀░█▀▄░░
@@ -35,6 +35,6 @@ class LLMWrapper:
         return list[float](self._llm.get_logits_from_input_ids(tokens))
 
     def print_paths(self, debug: bool) -> None:
-        print_debug(debug, self._llm.get_path_to_vocab_file())
-        print_debug(debug, self._llm.get_path_to_merges_file())
-        print_debug(debug, self._llm.get_path_to_tokenizer_file())
+        pdebug(debug, self._llm.get_path_to_vocab_file())
+        pdebug(debug, self._llm.get_path_to_merges_file())
+        pdebug(debug, self._llm.get_path_to_tokenizer_file())

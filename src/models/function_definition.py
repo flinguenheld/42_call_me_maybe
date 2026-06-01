@@ -14,6 +14,19 @@ class ModelFunction(BaseModel):
     parameters: Dict[str, Dict[str, str]]
     returns: Dict[str, str]
 
+    def prototype(self) -> str:
+        """Because it's fun"""
+
+        txt = f"{self.name}("
+        for key, val in self.parameters.items():
+            txt += f"{key}: {val['type']},"
+        txt = txt.rstrip(",")
+        txt += ") -> "
+        for val in self.returns.values():
+            txt += f"{val},"
+
+        return txt.rstrip(",")
+
 
 # ░░░░░░░░░░░░░░░░░█▀█░█▀█░█▀▄░█▀▀░█▀▀░░░█▀▀░█░█░█▀█░█▀▀░▀█▀░▀█▀░█▀█░█▀█░█▀▀░░
 # ░░░░░░░░░░░░░░░░░█▀▀░█▀█░█▀▄░▀▀█░█▀▀░░░█▀▀░█░█░█░█░█░░░░█░░░█░░█░█░█░█░▀▀█░░

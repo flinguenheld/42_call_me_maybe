@@ -3,9 +3,10 @@ from termcolor import cprint
 from src.error.error import CallMeError
 from src.models.prompt import parse_prompts
 from src.llm_wrapper.llm_wrapper import LLMWrapper
+from src.utils.utils import pdebug
 from src.utils.parser_call_me import parse_call_me
 from src.talker.function import TalkerFunction
-from src.talker.attribute import TalkerAttribute
+from src.talker.parameter import TalkerParameter
 from src.models.function_definition import parse_functions, ModelFunction
 
 
@@ -17,52 +18,42 @@ if __name__ == "__main__":
         exit(1)
     else:
         try:
+            debug = True
             fn_defs: List[ModelFunction] = parse_functions(
                 arguments["definitions"]
             )
             prompts = parse_prompts(arguments["input"])
 
             llm = LLMWrapper()
+            prompt_test = "What is the sum of 265 and 345?"
+            # prompt_test = "Reverse the string 'hello'"
 
-            # llm = LLMManager("Add 3 and 2", Constraint_functions(fn_defs))
-            manager_func = TalkerFunction(
+            pdebug(debug, " \nFUNCTION\n ", colour="cyan", title=True)
+            talker_function = TalkerFunction(
                 llm=llm,
-                question="Greet john",
+                # question="Greet john",
+                question=prompt_test,
                 functions=fn_defs,
-                debug=True,
+                debug=debug,
             )
-            # llm = LLMManager(
-            #     "What is the sum of 265 and 345?", Constraint(fn_defs)
-            # )
-            # llm = LLMManager(
-            #     'Replace all numbers in "Hello 34 I\'m 233 years old"
-            # with NUMBERS',
-            #     Constraint_functions(fn_defs),
-            # )
-            # llm = LLMManager(
-            #     "Substitute the word 'cat' with 'dog' in 'The
-            # cat sat on the mat with another cat'",
-            #     Constraint_functions(fn_defs),
-            # )
-            # llm = LLMManager(
-            #     "It's late, does Novanns have to go to bed ?",
-            #     Constraint_functions(fn_defs),
-            # )
 
-            # llm.next_token()
+            talker_function.talk()
             # for _ in range(5):
-            manager_func.next_token()
-            print("#########################################################")
-            print("#########################################################")
-            print("#########################################################")
+            if talker_function.found:
+                pdebug(debug, " \nPARAMETERS\n ", colour="cyan", title=True)
+                function = talker_function.found
+                for key, val in function.parameters.items():
+                    pdebug(debug, f"Search parameter {key} {val}", title=True)
 
-            llm2 = TalkerAttribute(
-                llm=llm,
-                question="Greet john",
-                debug=True,
-            )
+                    talker_parameter = TalkerParameter(
+                        llm=llm,
+                        question=prompt_test,
+                        to_find="s",
+                        function=talker_function.found,
+                        debug=debug,
+                    )
 
-            llm2.next_token()
+                talker_parameter.talk()
 
         except CallMeError as e:
             e.print()

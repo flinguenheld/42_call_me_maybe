@@ -9,7 +9,6 @@ from src.models.function_definition import ModelFunction
 # ░░░░░░░░░░░░░░░░░▀▀▀░▀▀▀░▀░▀░▀▀▀░░▀░░▀░▀░▀░▀░▀▀▀░▀░▀░░▀░░░░▀░░░▀▀▀░▀░▀░▀▀▀░░
 @dataclass
 class ConstraintFunction:
-    column: int = -1
     current: List[int] = field(default_factory=list)
     authorised_tokens: Set[int] = field(default_factory=set)
     functions_def: List[ModelFunction] = field(default_factory=list)
@@ -20,12 +19,15 @@ class ConstraintFunction:
         for function in self.functions_def:
             self.encoded_names[function.name] = method(function.name)
 
-    def get_final_choice(self) -> str | None:
+    def get_final_choice(self) -> ModelFunction | None:
         """The constrain mechanism is done when only one choice left.
-        So return it only when it's the case
+        Get and return the model when time has come!
         """
         if len(self.encoded_names) == 1:
-            return next(iter(self.encoded_names.keys()))
+            last = next(iter(self.encoded_names.keys()))
+            for model in self.functions_def:
+                if model.name == last:
+                    return model
 
         return None
 
@@ -52,15 +54,12 @@ class ConstraintFunction:
 
         self.encoded_names = new_dict
 
-    def next_column(self) -> None:
-        """Move forward and update the authorised_token with the next 'column'
-        of all encoded names
-        """
-        self.column += 1
+    def update_authorised_tokens(self, column: int) -> None:
+        """Get the token of all encoded name at the 'column' position"""
         self.authorised_tokens.clear()
         for tokens in self.encoded_names.values():
-            if self.column < len(tokens):
-                self.authorised_tokens.add(tokens[self.column])
+            if column < len(tokens):
+                self.authorised_tokens.add(tokens[column])
 
     def __str__(self) -> str:
         """Return a formated string with all function name
