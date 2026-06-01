@@ -1,14 +1,11 @@
 from typing import Dict
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▄█░█▀█░█▀▄░█▀▀░█░░░░░█▀█░█░█░▀█▀░█▀█░█░█░▀█▀░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░█░█░█░█░█░█▀▀░█░░░░░█░█░█░█░░█░░█▀▀░█░█░░█░░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░▀░▀▀▀░▀▀░░▀▀▀░▀▀▀░░░▀▀▀░▀▀▀░░▀░░▀░░░▀▀▀░░▀░░░
-
-
-@dataclass
-class ModelOutput:
+class ModelOutput(BaseModel):
     prompt: str
     name: str
-    parameters: Dict[str, str]
+    parameters: Dict[str, str | int | float | bool]

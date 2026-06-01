@@ -7,7 +7,7 @@ from typing import Dict, Any, Callable
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█▀▄░█▀▄░█░█░█▀▄░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀▀▀░▀░▀░▀░▀░▀▀▀░▀░▀░░
 class CallMeError(Exception):
-    def __init__(self, message: str, **context: str):
+    def __init__(self, **context: str):
         super().__init__()
         self.context: Dict[str, str] = context
 
@@ -40,15 +40,22 @@ class CallMeError(Exception):
                     what = f"Model validation: {err['type']} -> {err['msg']}\n"
                     what += f"""     '{err["loc"]}'\n"""
                     what += f"""     '{err["input"]}'"""
-                    raise CallMeError("", what=what, where=description)
+                    raise CallMeError(what=what, where=description)
 
                 except FileNotFoundError as e:
                     what = "File not found!\n"
                     what += f"     -> '{str(e).split()[7]}'"
-                    raise CallMeError("", what=what, where=description)
+                    raise CallMeError(where=description, what=what)
+
+                except CallMeError as e:
+                    if "where" in e.context:
+                        e.context["where"] = (
+                            f"{description} -> {e.context['where']}"
+                        )
+                    raise e
 
                 except Exception as e:
-                    raise CallMeError("", what=str(e), where=description)
+                    raise CallMeError(where=description, what=str(e))
 
             return inner_func
 

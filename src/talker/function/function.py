@@ -1,11 +1,10 @@
-from itertools import count
 from typing import List
+from itertools import count
 from dataclasses import dataclass, field
 
 from src.talker.talker import Talker
-from src.utils.utils import pdebug
 from src.models.function_definition import ModelFunction
-from src.talker.constraint_function import ConstraintFunction
+from src.talker.function.function_constraint import ConstraintFunction
 
 
 # ░░░░░░░░░░░░░░░░░░░░░▀█▀░█▀█░█░░░█░█░█▀▀░█▀▄░░░█▀▀░█░█░█▀▀░▀█▀░▀█▀░█▀█░█▀█░░
@@ -17,9 +16,7 @@ class TalkerFunction(Talker):
     found: ModelFunction | None = field(init=False, default=None)
 
     def __post_init__(self) -> None:
-        super().__post_init__()
         self.constraint = ConstraintFunction(functions_def=self.functions)
-
         self.constraint.encode_names(self.llm.encode)
         self._prompt = f"""
 <|im_start|>system
@@ -37,13 +34,12 @@ Give only the FUNCTION NAME:
 <|im_start|>assistant
 function:
 """
-        self._prompt_encoded = self.llm.encode(self._prompt)
-        pdebug(self.debug, f"Prompt: '{self._prompt}'", colour="yellow")
+        super().__post_init__()
 
     def _token_with_max_value(self, values: List[float]) -> int:
         # tokens are used as indexes in values by the llm
 
-        pdebug(self.debug, f"Authorized tokens: {self._debug_format_auth()}")
+        self.deb.print(f"Authorized tokens: {self._debug_format_auth()}")
         token = next(iter(self.constraint.authorised_tokens))
         for i in range(1, len(values) - 1):
             if (
@@ -55,20 +51,19 @@ function:
 
     def talk(self) -> None:
         for turn in count():
-            pdebug(self.debug, f"turn {turn}", title=True)
+            self.deb.print(f"turn {turn}", title=True)
 
             self.constraint.update_authorised_tokens(turn)
             logits: List[float] = self.llm.get_logits(self._prompt_encoded)
             maxi = self._token_with_max_value(logits)
             self.constraint.add_current(maxi)
-            pdebug(self.debug, f"choice: '{maxi}'->'{self.llm.decode(maxi)}'")
+            self._prompt_encoded.append(maxi)
+            self.deb.print(f"choice: '{maxi}'->'{self.llm.decode(maxi)}'")
 
             self.found = self.constraint.get_final_choice()
             if self.found:
-                pdebug(self.debug, f"Function found: '{self.found.name}'")
+                self.deb.print(f"Function found: '{self.found.name}'")
                 break
-
-            self._prompt_encoded.append(maxi)
 
     def _debug_format_auth(self):
         text = ""
