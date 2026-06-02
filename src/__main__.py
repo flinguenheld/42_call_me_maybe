@@ -11,6 +11,8 @@ from src.llm_wrapper.llm_wrapper import LLMWrapper
 from src.talker.function.function import TalkerFunction
 from src.models.function_definition import parse_functions, ModelFunction
 
+from src.visual.tvisual import TVisual
+
 
 @CallMeError.catch("Manage prompt")
 def manage_prompt(llm: LLMWrapper, question: str) -> ModelOutput:
@@ -23,7 +25,7 @@ def manage_prompt(llm: LLMWrapper, question: str) -> ModelOutput:
     talker_function = TalkerFunction(
         llm=llm,
         question=question,
-        functions=fn_defs,
+        functions=fonction_list,
         deb=deb,
     )
 
@@ -57,13 +59,19 @@ if __name__ == "__main__":
         try:
             deb = DebugPrinter(active=True)
             # deb = DebugPrinter(active=False)
-            fn_defs: List[ModelFunction] = parse_functions(
+            fonction_list: List[ModelFunction] = parse_functions(
                 arguments["definitions"]
             )
-            prompts = parse_prompts(arguments["input"])
+            prompts_list = parse_prompts(arguments["input"])
 
-            llm = LLMWrapper.create_llm()
-            llm.print_paths(deb)
+            app = TVisual(
+                prompt_list=prompts_list,
+                function_list=fonction_list,
+            )
+            app.run()
+
+            # llm = LLMWrapper.create_llm()
+            # llm.print_paths(deb)
 
             # output = manage_prompt(
             #     # llm,
@@ -78,10 +86,10 @@ if __name__ == "__main__":
             # print(f"output built: {output}")
             # print(f"PROMPTS  {prompts}")
 
-            for prompt in prompts:
-                # print(f"PROMPT SA MERE {prompt}")
-                output = manage_prompt(llm, prompt.text)
-                # print(f"output built: {output}")
+            # for prompt in prompts:
+            #     # print(f"PROMPT SA MERE {prompt}")
+            #     output = manage_prompt(llm, prompt.text)
+            #     # print(f"output built: {output}")
 
         except CallMeError as e:
             e.print()

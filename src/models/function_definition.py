@@ -23,6 +23,8 @@ class ModelFunction(BaseModel):
                 txt += f"{key}: str, "
             elif val["type"] == "number":
                 txt += f"{key}: float, "
+            elif val["type"] == "integer":
+                txt += f"{key}: int, "
             else:
                 txt += f"{key}: {val['type']}, "
         txt = txt.rstrip(", ")

@@ -1,0 +1,7 @@
+TFunctionList {
+	border: round $primary;
+}
+
+TPromptList {
+	border: round $primary;
+}
