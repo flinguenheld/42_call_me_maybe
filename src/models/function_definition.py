@@ -19,13 +19,19 @@ class ModelFunction(BaseModel):
 
         txt = f"{self.name}("
         for key, val in self.parameters.items():
-            txt += f"{key}: {val['type']},"
-        txt = txt.rstrip(",")
-        txt += ") -> "
-        for val in self.returns.values():
-            txt += f"{val},"
-
-        return txt.rstrip(",")
+            if val["type"] == "string":
+                txt += f"{key}: str, "
+            elif val["type"] == "number":
+                txt += f"{key}: float, "
+            else:
+                txt += f"{key}: {val['type']}, "
+        txt = txt.rstrip(", ")
+        txt += ")"
+        return txt
+        # txt += ") -> "
+        # for val in self.returns.values():
+        #     txt += f"{val},"
+        # return txt.rstrip(",")
 
 
 # ░░░░░░░░░░░░░░░░░█▀█░█▀█░█▀▄░█▀▀░█▀▀░░░█▀▀░█░█░█▀█░█▀▀░▀█▀░▀█▀░█▀█░█▀█░█▀▀░░

@@ -18,7 +18,7 @@ class TalkerFunction(Talker):
     def __post_init__(self) -> None:
         self.constraint = ConstraintFunction(functions_def=self.functions)
         self.constraint.encode_names(self.llm.encode)
-        self._prompt = f"""
+        self.prompt = f"""
 <|im_start|>system
 You are a function calling assistant.
 Given the following available functions:
@@ -34,7 +34,7 @@ Give only the FUNCTION NAME:
 <|im_start|>assistant
 function:
 """
-        super().__post_init__()
+        self._encode_prompt()
 
     def _token_with_max_value(self, values: List[float]) -> int:
         # tokens are used as indexes in values by the llm

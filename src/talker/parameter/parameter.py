@@ -1,9 +1,13 @@
-from src.utils.debug_printer import DebugPrinter
-from src.error.error import CallMeError
+from src.models.output import ModelOutput
+from itertools import count
+import json
+from typing import List
+from json import JSONDecodeError
 from dataclasses import dataclass
 
 from src.talker.talker import Talker
-from src.llm_wrapper.llm_wrapper import LLMWrapper
+from src.error.error import CallMeError
+from src.utils.debug_printer import DebugPrinter
 from src.models.function_definition import ModelFunction
 
 
@@ -12,83 +16,96 @@ from src.models.function_definition import ModelFunction
 # ░░░░░░░░░░░░░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀░░░▀░░░▀░▀░▀░▀░▀░▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀░▀░░
 @dataclass()
 class TalkerParameter(Talker):
-    function: ModelFunction
+    def update_prompt(
+        self,
+        function: ModelFunction,
+        to_find: str,
+    ):
+        self.prompt = f"""You are a JSON-only extraction tool. \
+Never output anything other than a JSON object.
 
-    def __post_init__(self) -> None:
+Sentence: {self.question}
+Function: {function.prototype()}
+Description: {function.description}
+Extract the value of the parameter: {to_find}
 
-        self._prompt = f"""
-<|im_start|>system
-You are a function parameter extractor.
-Given a prompt, a function signature, a description,
-extract all arguments from the prompt as JSON.
+Output a single JSON object with exactly one key.
 
-Rules:
-- Do not answer the prompt
-- Do not output anything else
-- Output ONLY in JSON format
-- Do not add space nor new line
-- If required, convert the argument into digits (e.g. "forty two" → 42)
-- If an argument cannot be found, set it to None
-- Add <|endoftext|> at the end of JSON
+Example:
+Sentence: Book a flight to Cardiff for 3 people
+Function: fn_go(destination: str)
+Parameter: destination
+Output: {{"destination": "Cardiff"}}
 
-<example>
-prompt: "What is the sum of 100 and 8?"
-function: "fn_add_numbers(a: int, b: int)"
-description: "Add two numbers together and return their sum."
-arguments:{{"a":100,"b":8}}<|endoftext|>
-</example>
+Now extract:
+Sentence: {self.question}
+Function: {function.prototype()}
+Description: {function.description}
+Parameter: {to_find}
+Output:"""
+        self._encode_prompt()
 
-<example>
-prompt: "Add one to fifteen"
-function: "fn_add_numbers(param_a: int, param_b: int)"
-description: "Add two numbers together and return their sum."
-arguments:{{"param_a":1,"param_b":15}}<|endoftext|>
-</example>
+    def talk(self, parameter: str) -> str:
 
-<|im_end|>
-<|im_start|>user
-prompt: "{self.question}"
-function: "{self.function.prototype()}"
-description: "{self.function.description}"
-<|im_end|>
-<|im_start|>assistant
-<think>
+        current = ""
+        to_start = f'''{{"{parameter}": "'''
+        to_start_encoded = self.llm.encode(to_start)
 
-</think>
-arguments:
-"""
-        super().__post_init__()
+        for turn in count():
+            self.deb.print(f"turn {turn}", title=True)
 
+            logits: List[float] = self.llm.get_logits(self._prompt_encoded)
 
-@CallMeError.catch("Get parameters")
-def get_parameters(
-    llm: LLMWrapper,
-    question: str,
-    function: ModelFunction,
-    deb: DebugPrinter,
-):
-    talker_parameter = TalkerParameter(
-        llm=llm,
-        question=question,
-        function=function,
-        deb=deb,
-    )
-    parameters = talker_parameter.talk()
+            # Skip the first turns --
+            # I tried to directly add it in the prompt but it looks better
+            # to call get_logit token per token -_-
+            if turn < len(to_start_encoded):
+                current += self.llm.decode(to_start_encoded[turn])
+                self._prompt_encoded.append(to_start_encoded[turn])
 
-    print(f"parameters -> {parameters}")
+            elif turn > 50:
+                break
 
-    # if argument:
-    #     try:
-    #         return float(argument)
-    #     except ValueError:
-    #         raise CallMeError(
-    #             prompt=question,
-    #             parameter=parameter,
-    #             why=f"Impossible to convert '{argument}' in float",
-    #         )
+            else:
+                token = self._get_token_max_value(logits)
 
-    # raise CallMeError(
-    #     prompt=question,
-    #     parameter=parameter,
-    #     why="Parameter research has failed",
-    # )
+                self._prompt_encoded.append(token)
+                current += self.llm.decode(token)
+
+                if current.rstrip()[-1] == "}":
+                    return current.rstrip()
+
+            self.deb.print(f"'{current}'")
+
+        return f'{to_start} NO_FOUND"}}'
+
+    @CallMeError.catch("Get arguments")
+    def get_arguments(
+        self,
+        function: ModelFunction,
+        output: ModelOutput,
+        deb: DebugPrinter,
+    ):
+
+        for parameter in function.parameters.keys():
+            try:
+                self.update_prompt(function, parameter)
+                json_arg = json.loads(self.talk(parameter))
+                output.parameters[parameter] = json_arg[parameter]
+
+                # TODO add a conversion for numbers ??
+
+            except JSONDecodeError as e:
+                raise CallMeError(
+                    blah=str(e),
+                    prompt=self.prompt,
+                    what=f"Can't get the parameter '{parameter}'",
+                    why="The returned JSON format is invalid",
+                )
+
+            except Exception as e:
+                raise CallMeError(
+                    what=f"Can't get the parameter '{parameter}'",
+                    prompt=self.prompt,
+                    error=str(e),
+                )

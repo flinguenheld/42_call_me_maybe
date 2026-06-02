@@ -17,6 +17,12 @@ debug:
 		--input data/input/function_calling_tests.json \
 		--output data/output/function_calls.json
 
+advanced:
+	uv $(CACHE_GOINFRE) run python -m src \
+		--functions_definition data_advanced/input/functions_definition.json \
+		--input data_advanced/input/function_calling_tests.json \
+		--output data_advanced/output/function_calls.json
+
 clean:
 	uv $(CACHE_GOINFRE) cache clean
 	rm -rf __pycache__ .mypy_cache .venv uv.lock

@@ -18,6 +18,8 @@ class LLMWrapper:
     end_of_text: int = field(init=False)
     think_end: int = field(init=False)
     think_start: int = field(init=False)
+    new_line: int = field(init=False)
+    bracket_close: int = field(init=False)
 
     def __post_init__(self) -> None:
         self._llm = Small_LLM_Model()
@@ -25,6 +27,8 @@ class LLMWrapper:
         self.end_of_text = self.token_of("<|endoftext|>")
         self.think_end = self.token_of("</think>")
         self.think_start = self.token_of("<think>")
+        self.new_line = self.token_of("\n")
+        self.bracket_close = self.token_of("}")
 
     def encode(self, who: str) -> List[int]:
         return list[int](self._llm.encode(who)[0].tolist())
