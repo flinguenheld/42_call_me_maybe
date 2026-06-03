@@ -1,7 +1,21 @@
-TFunctionList {
+Screen {
+	layout: grid;
+	grid-size: 2 2;
+}
+
+.box {
+	height: 100%;
 	border: round $primary;
 }
 
-TPromptList {
-	border: round $primary;
-}
+# TMarkdown {
+# 	border: round $primary;
+# }
+
+# TFunctionList {
+# 	border: round $primary;
+# }
+
+# TPromptList {
+# 	border: round $primary;
+# }

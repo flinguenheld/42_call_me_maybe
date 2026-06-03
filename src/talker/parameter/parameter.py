@@ -52,7 +52,7 @@ Output:"""
         to_start_encoded = self.llm.encode(to_start)
 
         for turn in count():
-            self.deb.print(f"turn {turn}", title=True)
+            self.printer.up_blahblah(f"turn {turn}")
 
             logits: List[float] = self.llm.get_logits(self._prompt_encoded)
 
@@ -75,7 +75,7 @@ Output:"""
                 if current.rstrip()[-1] == "}":
                     return current.rstrip()
 
-            self.deb.print(f"'{current}'")
+            self.printer.up_blahblah(f"'{current}'")
 
         return f'{to_start} NO_FOUND"}}'
 

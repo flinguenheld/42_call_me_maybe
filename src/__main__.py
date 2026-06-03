@@ -1,3 +1,4 @@
+from src.visual.visual_printer import VisualPrinter
 from src.talker.parameter.parameter import TalkerParameter
 from typing import List
 from termcolor import cprint
@@ -12,41 +13,6 @@ from src.talker.function.function import TalkerFunction
 from src.models.function_definition import parse_functions, ModelFunction
 
 from src.visual.tvisual import TVisual
-
-
-@CallMeError.catch("Manage prompt")
-def manage_prompt(llm: LLMWrapper, question: str) -> ModelOutput:
-
-    output = ModelOutput.model_construct()
-    output.prompt = question
-    output.parameters = {}
-
-    deb.print(" \nFUNCTION\n ", col="cyan", title=True)
-    talker_function = TalkerFunction(
-        llm=llm,
-        question=question,
-        functions=fonction_list,
-        deb=deb,
-    )
-
-    talker_function.talk()
-    if talker_function.found:
-        deb.print(" \nPARAMETERS\n ", col="cyan", title=True)
-        function = talker_function.found
-        output.name = function.name
-
-        talker_parameters = TalkerParameter(
-            llm=llm,
-            question=question,
-            deb=deb,
-        )
-
-        print(f"HERE THE QUESTION: '{question}'")
-        talker_parameters.get_arguments(function, output, deb)
-        print(output)
-        print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-
-    return output
 
 
 if __name__ == "__main__":
@@ -64,14 +30,19 @@ if __name__ == "__main__":
             )
             prompts_list = parse_prompts(arguments["input"])
 
+            llm = LLMWrapper.create_llm()
+            llm.print_paths(deb)
+
             app = TVisual(
+                llm,
                 prompt_list=prompts_list,
                 function_list=fonction_list,
             )
+            printer: VisualPrinter = app.get_visual_printer()
+
             app.run()
 
-            # llm = LLMWrapper.create_llm()
-            # llm.print_paths(deb)
+            # printer.up_blahblah("MY ASS")
 
             # output = manage_prompt(
             #     # llm,

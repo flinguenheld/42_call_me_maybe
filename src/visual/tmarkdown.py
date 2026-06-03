@@ -3,9 +3,9 @@ from textual.widgets import Static, Markdown
 
 
 class TMarkdown(Static):
-    def __init__(self, title: str, id: str):
-        super().__init__()
-        self.area = Markdown(id=id)
+    def __init__(self, title: str, classes: str = ""):
+        super().__init__(classes="box " + classes)
+        self.area = Markdown(classes=classes)
         self.border_title = title
 
     def update_current(self, current: str = ""):

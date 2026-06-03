@@ -6,7 +6,7 @@ from src.visual.tmarkdown import TMarkdown
 
 class TPromptList(TMarkdown):
     def __init__(self, prompt_list: List[ModelPrompt]):
-        super().__init__(title="Prompts", id="prompt_list")
+        super().__init__(title="Prompts")
         self.elements = prompt_list
 
     def update_current(self, current: str = ""):
