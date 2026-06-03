@@ -4,21 +4,21 @@ from src.visual.tmarkdown import TMarkdown
 from src.models.function_definition import ModelFunction
 
 
+# ░░░░░░░░░░░░░░░░░░░░░▀█▀░█▀▀░█░█░█▀█░█▀▀░▀█▀░▀█▀░█▀█░█▀█░░░█░░░▀█▀░█▀▀░▀█▀░░
+# ░░░░░░░░░░░░░░░░░░░░░░█░░█▀▀░█░█░█░█░█░░░░█░░░█░░█░█░█░█░░░█░░░░█░░▀▀█░░█░░░
+# ░░░░░░░░░░░░░░░░░░░░░░▀░░▀░░░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀▀▀░▀░▀░░░▀▀▀░▀▀▀░▀▀▀░░▀░░░
 class TFunctionList(TMarkdown):
-    def __init__(self, function_list: List[ModelFunction]):
+    def __init__(self, function_list: List[ModelFunction]) -> None:
         super().__init__(title="Functions")
         self.elements = function_list
 
-    def set_txt(self, text: str = ""):
+    def up_list(self) -> None:
         document = "```python\n"
         for function in self.elements:
-            # if current == function.name:
-            #     txt += f"```python\n{function.prototype()}\n```\n"
-            # else:
             document += f"{function.prototype()}\n\n"
 
         document += "```"
         self.update_document(document)
 
     def on_mount(self) -> None:
-        self.set_txt()
+        self.up_list()

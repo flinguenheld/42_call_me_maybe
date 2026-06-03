@@ -66,7 +66,7 @@ function:
                 self.printer.up_blah(3, f"Function found: {self.found.name}")
                 break
 
-    def _format_auth(self):
+    def _format_auth(self) -> str:
         text = ""
         for token in self.constraint.authorised_tokens:
             text += f"'{self.llm.decode(token)}' "

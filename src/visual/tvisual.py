@@ -1,12 +1,12 @@
-from textual.containers import ScrollableContainer
-from src.models.output import ModelOutput
-from textual import work
 from typing import List
-from textual.widgets import Header, Footer
+from textual import work
 from textual.app import App, ComposeResult
+from textual.widgets import Header, Footer
+from textual.containers import ScrollableContainer
 
 from src.visual.tprompt import TPrompt
 from src.models.prompt import ModelPrompt
+from src.models.output import ModelOutput
 from src.visual.tblahblah import TBlahBlah
 from src.manager.manager import manage_prompt
 from src.visual.tprompt_list import TPromptList
@@ -16,6 +16,9 @@ from src.visual.tfunction_list import TFunctionList
 from src.models.function_definition import ModelFunction
 
 
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█▀░█░█░▀█▀░█▀▀░█░█░█▀█░█░░░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░▀▄▀░░█░░▀▀█░█░█░█▀█░█░░░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░░▀░░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░
 class TVisual(App):
     CSS_PATH = [
         "styles/main.tcss",
@@ -55,7 +58,7 @@ class TVisual(App):
         )
 
     @work(exclusive=True, thread=True)
-    def call_me_maybe(self):
+    def call_me_maybe(self) -> None:
         for prompt in self.prompt_list:
             self.visual_printer.clear_blah()
 
@@ -71,17 +74,8 @@ class TVisual(App):
         self.visual_printer.clear_blah()
         self.visual_printer.up_prompt_list()
 
-    def action_call_me(self):
+    def action_call_me(self) -> None:
         self.call_me_maybe()
-
-    # ########################################################################
-    # ################################################### VISUAL PRINTER #####
-    # TODO: USEFUL ??????????????????????
-    # TODO: USEFUL ??????????????????????
-    # TODO: USEFUL ??????????????????????
-    # TODO: USEFUL ??????????????????????
-    def get_visual_printer(self):
-        return self.visual_printer
 
     # ########################################################################
     # ########################################################### THEMES #####

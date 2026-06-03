@@ -6,6 +6,9 @@ from src.visual.tmarkdown import TMarkdown
 from src.models.function_definition import ModelFunction
 
 
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█▀░█▀█░█▀▄░█▀█░█▄█░█▀█░▀█▀░░░█░░░▀█▀░█▀▀░▀█▀░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░█▀▀░█▀▄░█░█░█░█░█▀▀░░█░░░░█░░░░█░░▀▀█░░█░░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░▀░░░▀░▀░▀▀▀░▀░▀░▀░░░░▀░░░░▀▀▀░▀▀▀░▀▀▀░░▀░░░
 class TPromptList(TMarkdown):
     def __init__(
         self,
@@ -43,7 +46,7 @@ class TPromptList(TMarkdown):
 
         return text
 
-    def up_current(self, current: str = ""):
+    def up_current(self, current: str = "") -> None:
         document = ""
         for prompt in self.prompts:
             if current == prompt.text:

@@ -20,7 +20,7 @@ class TalkerParameter(Talker):
         self,
         function: ModelFunction,
         to_find: str,
-    ):
+    ) -> None:
         self.prompt = f"""You are a JSON-only extraction tool. \
 Never output anything other than a JSON object.
 
@@ -84,7 +84,7 @@ Output:"""
         function: ModelFunction,
         output: ModelOutput,
         printer: VisualPrinter,
-    ):
+    ) -> None:
 
         for parameter in function.parameters.keys():
             try:

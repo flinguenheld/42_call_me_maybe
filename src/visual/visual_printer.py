@@ -8,6 +8,9 @@ from src.visual.tblahblah import TBlahBlah
 from src.visual.tprompt_list import TPromptList
 
 
+# ░░░░░░░░░░░░░░░░░░░░░█░█░▀█▀░█▀▀░█░█░█▀█░█░░░░░█▀█░█▀▄░▀█▀░█▀█░▀█▀░█▀▀░█▀▄░░
+# ░░░░░░░░░░░░░░░░░░░░░▀▄▀░░█░░▀▀█░█░█░█▀█░█░░░░░█▀▀░█▀▄░░█░░█░█░░█░░█▀▀░█▀▄░░
+# ░░░░░░░░░░░░░░░░░░░░░░▀░░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░░▀░░░▀░▀░▀▀▀░▀░▀░░▀░░▀▀▀░▀░▀░░
 @dataclass
 class VisualPrinter:
     app: App

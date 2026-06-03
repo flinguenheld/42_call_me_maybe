@@ -16,7 +16,7 @@ class Talker:
     prompt: str = field(init=False)
     _prompt_encoded: List[int] = field(init=False, default_factory=list)
 
-    def _encode_prompt(self):
+    def _encode_prompt(self) -> None:
         self._prompt_encoded = self.llm.encode(self.prompt)
         self.printer.up_prompt("my title", self.prompt)
 

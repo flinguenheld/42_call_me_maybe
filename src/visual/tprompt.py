@@ -1,11 +1,14 @@
 from src.visual.tmarkdown import TMarkdown
 
 
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█▀░█▀█░█▀▄░█▀█░█▄█░█▀█░▀█▀░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░█▀▀░█▀▄░█░█░█░█░█▀▀░░█░░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░▀░░░▀░▀░▀▀▀░▀░▀░▀░░░░▀░░░
 class TPrompt(TMarkdown):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(title="Current prompt")
 
-    def set_txt(self, txt: str = "", title: str = ""):
+    def set_txt(self, txt: str = "", title: str = "") -> None:
         document = f"### {title}\n"
         document += txt
 
