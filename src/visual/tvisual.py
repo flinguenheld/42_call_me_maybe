@@ -59,6 +59,8 @@ class TVisual(App):
 
     @work(exclusive=True, thread=True)
     def call_me_maybe(self) -> None:
+        self.output_list.clear()
+
         for prompt in self.prompt_list:
             self.visual_printer.clear_blah()
 

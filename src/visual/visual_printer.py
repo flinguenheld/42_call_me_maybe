@@ -26,10 +26,9 @@ class VisualPrinter:
     def clear_blah(self) -> None:
         self.app.call_from_thread(self.widget_blah.clear)
 
-    def up_prompt(self, title: str = "", text: str = "") -> None:
+    def up_prompt(self, text: str = "") -> None:
         self.app.call_from_thread(
-            self.widget_prompt.set_txt,
-            title,
+            self.widget_prompt.up_txt,
             text,
         )
 
