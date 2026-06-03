@@ -1,14 +1,13 @@
-from src.visual.visual_printer import VisualPrinter
-from src.models.output import ModelOutput
-from itertools import count
 import json
 from typing import List
+from itertools import count
 from json import JSONDecodeError
 from dataclasses import dataclass
 
 from src.talker.talker import Talker
 from src.error.error import CallMeError
-from src.utils.debug_printer import DebugPrinter
+from src.models.output import ModelOutput
+from src.visual.visual_printer import VisualPrinter
 from src.models.function_definition import ModelFunction
 
 
@@ -53,7 +52,7 @@ Output:"""
         to_start_encoded = self.llm.encode(to_start)
 
         for turn in count():
-            self.printer.up_blah(4, f"```python\nturn {turn}\n\n")
+            self.printer.up_blah(4, f"```json\nturn {turn}\n\n")
             logits: List[float] = self.llm.get_logits(self._prompt_encoded)
 
             # Skip the first turns --

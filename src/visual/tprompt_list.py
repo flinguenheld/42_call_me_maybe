@@ -1,19 +1,59 @@
 from typing import List
 
 from src.models.prompt import ModelPrompt
+from src.models.output import ModelOutput
 from src.visual.tmarkdown import TMarkdown
+from src.models.function_definition import ModelFunction
 
 
 class TPromptList(TMarkdown):
-    def __init__(self, prompt_list: List[ModelPrompt]):
+    def __init__(
+        self,
+        prompt_list: List[ModelPrompt],
+        element_done: List[ModelOutput],
+        function_list: List[ModelFunction],
+    ):
         super().__init__(title="Prompts")
-        self.elements = prompt_list
+        self.prompts = prompt_list
+        self.outputs = element_done
+        self.functions = function_list
 
-    def set_txt(self, current: str = ""):
+    def _get_output(self, prompt: str) -> ModelOutput | None:
+        for output in self.outputs:
+            if output.prompt == prompt:
+                return output
+        return None
+
+    def _get_function(self, name: str) -> ModelFunction | None:
+        for function in self.functions:
+            if function.name == name:
+                return function
+        return None
+
+    def format_output(self, current: str) -> str:
+
+        text = ""
+        output = self._get_output(current)
+        if output:
+            function = self._get_function(output.name)
+            if function:
+                text += "```python\n"
+                text += f"{function.prototype()}\n"
+                text += f"{output.parameters}\n```"
+
+        return text
+
+    def up_current(self, current: str = ""):
         document = ""
-        for prompt in self.elements:
+        for prompt in self.prompts:
             if current == prompt.text:
-                document += f"##### ->{prompt.text}<-\n"
+                document += f"### -> {prompt.text} <-\n"
             else:
                 document += f"###### {prompt.text}\n"
+                output = self.format_output(prompt.text)
+                if output:
+                    document += f"{output}\n"
         self.update_document(document)
+
+    def on_mount(self) -> None:
+        self.up_current()

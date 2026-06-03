@@ -1,5 +1,4 @@
-from textual.reactive import reactive
-from typing import Dict, List
+from typing import Dict
 
 from src.visual.tmarkdown import TMarkdown
 
@@ -11,6 +10,7 @@ class TBlahBlah(TMarkdown):
 
     def clear(self):
         self.lines.clear()
+        self.update_document("")
 
     def set_txt(self, who: int, what: str):
         self.lines[who] = what

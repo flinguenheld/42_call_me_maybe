@@ -15,7 +15,10 @@ class TFunctionList(TMarkdown):
             # if current == function.name:
             #     txt += f"```python\n{function.prototype()}\n```\n"
             # else:
-            document += f"{function.prototype()}\n"
+            document += f"{function.prototype()}\n\n"
 
         document += "```"
         self.update_document(document)
+
+    def on_mount(self) -> None:
+        self.set_txt()

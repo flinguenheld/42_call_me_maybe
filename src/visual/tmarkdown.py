@@ -4,7 +4,7 @@ from textual.widgets import Static, Markdown
 
 class TMarkdown(Static):
     def __init__(self, title: str, classes: str = ""):
-        super().__init__(classes="box " + classes)
+        super().__init__(classes=classes)
         self.area = Markdown(classes=classes)
         self.border_title = title
 
@@ -13,6 +13,3 @@ class TMarkdown(Static):
 
     def compose(self) -> ComposeResult:
         yield self.area
-
-    def on_mount(self) -> None:
-        self.update_document()

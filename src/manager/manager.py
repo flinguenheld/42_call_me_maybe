@@ -14,6 +14,7 @@ def manage_prompt(
     llm: LLMWrapper,
     question: str,
     function_list: List[ModelFunction],
+    output_list: List[ModelOutput],
     printer: VisualPrinter,
 ) -> ModelOutput:
 
@@ -21,7 +22,7 @@ def manage_prompt(
     output.prompt = question
     output.parameters = {}
 
-    printer.up_blah(0, f"## Prompt: '{question}'\n")
+    printer.up_prompt_list(question)
     printer.up_blah(1, ">Search function...\n")
     talker_function = TalkerFunction(
         llm=llm,
@@ -34,7 +35,6 @@ def manage_prompt(
     if talker_function.found:
         function = talker_function.found
         output.name = function.name
-        printer.up_blah(0, f"# Prompt: '{question}'\n")
         printer.up_blah(1, ">Function found\n")
         printer.up_blah(2, f"```python\n{function.prototype()}\n```\n")
 
@@ -45,6 +45,11 @@ def manage_prompt(
         )
 
         talker_parameters.get_arguments(function, output, printer)
+
+        # TODO ADD A CHECK TO SEE IF IT'S OK !!!!!!!!!!!!!!!
+        # TODO ADD A CHECK TO SEE IF IT'S OK !!!!!!!!!!!!!!!
+        # TODO ADD A CHECK TO SEE IF IT'S OK !!!!!!!!!!!!!!!
+        output_list.append(output)
     # print(output)
 
     return output

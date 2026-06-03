@@ -1,11 +1,6 @@
-from src.manager.manager import manage_prompt
-from textual import work
-from src.talker.parameter.parameter import TalkerParameter
-from src.talker.function.function import TalkerFunction
+from textual.containers import ScrollableContainer
 from src.models.output import ModelOutput
-from src.llm_wrapper.llm_wrapper import LLMWrapper
-from src.error.error import CallMeError
-from src.visual.visual_printer import VisualPrinter
+from textual import work
 from typing import List
 from textual.widgets import Header, Footer
 from textual.app import App, ComposeResult
@@ -13,7 +8,10 @@ from textual.app import App, ComposeResult
 from src.visual.tprompt import TPrompt
 from src.models.prompt import ModelPrompt
 from src.visual.tblahblah import TBlahBlah
+from src.manager.manager import manage_prompt
 from src.visual.tprompt_list import TPromptList
+from src.llm_wrapper.llm_wrapper import LLMWrapper
+from src.visual.visual_printer import VisualPrinter
 from src.visual.tfunction_list import TFunctionList
 from src.models.function_definition import ModelFunction
 
@@ -33,11 +31,16 @@ class TVisual(App):
         llm: LLMWrapper,
         prompt_list: List[ModelPrompt],
         function_list: List[ModelFunction],
+        output_list: List[ModelOutput],
     ) -> None:
         super().__init__()
         self.llm = llm
+        self.output_list = output_list
+
         self.prompt_list = prompt_list
-        self.tprompt_list = TPromptList(prompt_list)
+        self.tprompt_list = TPromptList(
+            prompt_list, output_list, function_list
+        )
         self.function_list = function_list
         self.tfunction_list = TFunctionList(function_list)
         self.tprompt = TPrompt()
@@ -49,8 +52,6 @@ class TVisual(App):
             widget_prompt=self.tprompt,
             prompt_list=prompt_list,
             widget_prompt_list=self.tprompt_list,
-            function_list=function_list,
-            widget_function_list=self.tfunction_list,
         )
 
     @work(exclusive=True, thread=True)
@@ -58,13 +59,19 @@ class TVisual(App):
         for prompt in self.prompt_list:
             self.visual_printer.clear_blah()
 
-            output = manage_prompt(
-                self.llm, prompt.text, self.function_list, self.visual_printer
+            manage_prompt(
+                self.llm,
+                prompt.text,
+                self.function_list,
+                self.output_list,
+                self.visual_printer,
             )
-            # print(f"output built: {output}")
+
+        self.visual_printer.up_prompt()
+        self.visual_printer.clear_blah()
+        self.visual_printer.up_prompt_list()
 
     def action_call_me(self):
-        # self.visual_printer.up_blahblah("HELLO WORLD")
         self.call_me_maybe()
 
     # ########################################################################
@@ -95,14 +102,16 @@ class TVisual(App):
     # ################################################### COMPOSE / MOUNT ####
     def compose(self) -> ComposeResult:
         yield Header()
-        yield self.tprompt
-        yield self.tprompt_list
-        yield self.tblahblah
-        yield self.tfunction_list
+        with ScrollableContainer(classes="box"):
+            yield self.tprompt
+        with ScrollableContainer(classes="box"):
+            yield self.tprompt_list
+        with ScrollableContainer(classes="box"):
+            yield self.tblahblah
+        with ScrollableContainer(classes="box"):
+            yield self.tfunction_list
         yield Footer()
 
     def on_mount(self) -> None:
         self.title = "Call me maybe"
         self.action_next_theme()
-
-        self.tprompt.set_txt("hello")
