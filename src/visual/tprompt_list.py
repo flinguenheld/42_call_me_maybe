@@ -9,11 +9,11 @@ class TPromptList(TMarkdown):
         super().__init__(title="Prompts")
         self.elements = prompt_list
 
-    def update_current(self, current: str = ""):
-        txt = ""
+    def set_txt(self, current: str = ""):
+        document = ""
         for prompt in self.elements:
             if current == prompt.text:
-                txt += f"##### ->{prompt.text}<-\n"
+                document += f"##### ->{prompt.text}<-\n"
             else:
-                txt += f"###### {prompt.text}\n"
-        self.area.update(txt)
+                document += f"###### {prompt.text}\n"
+        self.update_document(document)

@@ -24,12 +24,18 @@ class VisualPrinter:
     function_list: List[ModelFunction]
     widget_function_list: TFunctionList
 
-    def up_blahblah(self, text: str = "") -> None:
-        self.app.call_from_thread(self.widget_blah.update_current, text)
+    def up_blah(self, who: int, what: str) -> None:
+        self.app.call_from_thread(self.widget_blah.set_txt, who, what)
 
-    def up_prompt(self, text: str = "") -> None:
-        self.app.call_from_thread(self.widget_prompt.update_current, text)
-        self.up_blahblah()
+    def clear_blah(self) -> None:
+        self.app.call_from_thread(self.widget_blah.clear)
+
+    def up_prompt(self, title: str = "", text: str = "") -> None:
+        self.app.call_from_thread(
+            self.widget_prompt.set_txt,
+            title,
+            text,
+        )
 
     def up_prompt_list(self, output: List[ModelOutput]) -> None:
         pass

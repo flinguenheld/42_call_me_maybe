@@ -1,3 +1,4 @@
+from src.visual.visual_printer import VisualPrinter
 from src.models.output import ModelOutput
 from itertools import count
 import json
@@ -52,8 +53,7 @@ Output:"""
         to_start_encoded = self.llm.encode(to_start)
 
         for turn in count():
-            self.printer.up_blahblah(f"turn {turn}")
-
+            self.printer.up_blah(4, f"```python\nturn {turn}\n\n")
             logits: List[float] = self.llm.get_logits(self._prompt_encoded)
 
             # Skip the first turns --
@@ -75,7 +75,7 @@ Output:"""
                 if current.rstrip()[-1] == "}":
                     return current.rstrip()
 
-            self.printer.up_blahblah(f"'{current}'")
+            self.printer.up_blah(5, f"{current}\n```")
 
         return f'{to_start} NO_FOUND"}}'
 
@@ -84,11 +84,12 @@ Output:"""
         self,
         function: ModelFunction,
         output: ModelOutput,
-        deb: DebugPrinter,
+        printer: VisualPrinter,
     ):
 
         for parameter in function.parameters.keys():
             try:
+                printer.up_blah(3, f">Search parameter '{parameter}'")
                 self.update_prompt(function, parameter)
                 json_arg = json.loads(self.talk(parameter))
                 output.parameters[parameter] = json_arg[parameter]

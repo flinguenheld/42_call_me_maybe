@@ -18,7 +18,7 @@ class Talker:
 
     def _encode_prompt(self):
         self._prompt_encoded = self.llm.encode(self.prompt)
-        self.printer.up_prompt(self.prompt)
+        self.printer.up_prompt("my title", self.prompt)
 
     def _get_token_max_value(self, values: List[float]) -> int:
         # tokens are used as indexes in values by the LLM

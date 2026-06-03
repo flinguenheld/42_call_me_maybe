@@ -1,3 +1,4 @@
+from src.manager.manager import manage_prompt
 from textual import work
 from src.talker.parameter.parameter import TalkerParameter
 from src.talker.function.function import TalkerFunction
@@ -15,48 +16,6 @@ from src.visual.tblahblah import TBlahBlah
 from src.visual.tprompt_list import TPromptList
 from src.visual.tfunction_list import TFunctionList
 from src.models.function_definition import ModelFunction
-
-
-# TODO: PUT THAT IN A BEAUTIFUL PLACE ---------------------------
-# TODO: PUT THAT IN A BEAUTIFUL PLACE ---------------------------
-# TODO: PUT THAT IN A BEAUTIFUL PLACE ---------------------------
-# TODO: PUT THAT IN A BEAUTIFUL PLACE ---------------------------
-@CallMeError.catch("Manage prompt")
-def manage_prompt(
-    llm: LLMWrapper,
-    question: str,
-    function_list: List[ModelFunction],
-    printer: VisualPrinter,
-) -> ModelOutput:
-
-    output = ModelOutput.model_construct()
-    output.prompt = question
-    output.parameters = {}
-
-    printer.up_blahblah(" \nFUNCTION\n ")
-    talker_function = TalkerFunction(
-        llm=llm,
-        question=question,
-        functions=function_list,
-        printer=printer,
-    )
-
-    talker_function.talk()
-    if talker_function.found:
-        printer.up_blahblah(" \nPARAMETERS\n ")
-        function = talker_function.found
-        output.name = function.name
-
-        talker_parameters = TalkerParameter(
-            llm=llm,
-            question=question,
-            printer=printer,
-        )
-
-        talker_parameters.get_arguments(function, output, printer)
-    # print(output)
-
-    return output
 
 
 class TVisual(App):
@@ -97,7 +56,8 @@ class TVisual(App):
     @work(exclusive=True, thread=True)
     def call_me_maybe(self):
         for prompt in self.prompt_list:
-            self.visual_printer.up_blahblah, f"-> {prompt.text}"
+            self.visual_printer.clear_blah()
+
             output = manage_prompt(
                 self.llm, prompt.text, self.function_list, self.visual_printer
             )
@@ -145,4 +105,4 @@ class TVisual(App):
         self.title = "Call me maybe"
         self.action_next_theme()
 
-        self.tprompt.update_current("hello")
+        self.tprompt.set_txt("hello")

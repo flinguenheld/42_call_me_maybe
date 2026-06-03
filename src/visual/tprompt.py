@@ -5,5 +5,8 @@ class TPrompt(TMarkdown):
     def __init__(self):
         super().__init__(title="Current prompt")
 
-    def update_current(self, current: str = ""):
-        self.area.update(current)
+    def set_txt(self, txt: str = "", title: str = ""):
+        document = f"### {title}\n"
+        document += txt
+
+        self.update_document(document)

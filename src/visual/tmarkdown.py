@@ -8,11 +8,11 @@ class TMarkdown(Static):
         self.area = Markdown(classes=classes)
         self.border_title = title
 
-    def update_current(self, current: str = ""):
-        pass
+    def update_document(self, document: str = ""):
+        self.area.update(document)
 
     def compose(self) -> ComposeResult:
         yield self.area
 
     def on_mount(self) -> None:
-        self.update_current()
+        self.update_document()

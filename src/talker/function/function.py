@@ -39,9 +39,8 @@ function:
     def _token_with_max_value(self, values: List[float]) -> int:
         # tokens are used as indexes in values by the llm
 
-        self.printer.up_blahblah(
-            f"Authorized tokens: {self._debug_format_auth()}"
-        )
+        self.printer.up_blah(3, f"Authorised tokens: {self._format_auth()}")
+
         token = next(iter(self.constraint.authorised_tokens))
         for i in range(1, len(values) - 1):
             if (
@@ -53,25 +52,21 @@ function:
 
     def talk(self) -> None:
         for turn in count():
-            self.printer.up_blahblah(f"turn {turn}")
+            self.printer.up_blah(2, f"```python\nturn {turn}\n```\n")
 
             self.constraint.update_authorised_tokens(turn)
             logits: List[float] = self.llm.get_logits(self._prompt_encoded)
             maxi = self._token_with_max_value(logits)
             self.constraint.add_current(maxi)
             self._prompt_encoded.append(maxi)
-            self.printer.up_blahblah(
-                f"choice: '{maxi}'->'{self.llm.decode(maxi)}'"
-            )
+            self.printer.up_blah(4, self.llm.decode(maxi))
 
             self.found = self.constraint.get_final_choice()
             if self.found:
-                self.printer.up_blahblah(
-                    f"Function found: '{self.found.name}'"
-                )
+                self.printer.up_blah(3, f"Function found: {self.found.name}")
                 break
 
-    def _debug_format_auth(self):
+    def _format_auth(self):
         text = ""
         for token in self.constraint.authorised_tokens:
             text += f"'{self.llm.decode(token)}' "

@@ -9,13 +9,13 @@ class TFunctionList(TMarkdown):
         super().__init__(title="Functions")
         self.elements = function_list
 
-    def update_current(self, current: str = ""):
-        txt = "```python\n"
+    def set_txt(self, text: str = ""):
+        document = "```python\n"
         for function in self.elements:
             # if current == function.name:
             #     txt += f"```python\n{function.prototype()}\n```\n"
             # else:
-            txt += f"{function.prototype()}\n"
+            document += f"{function.prototype()}\n"
 
-        txt += "```"
-        self.area.update(txt)
+        document += "```"
+        self.update_document(document)
