@@ -24,6 +24,7 @@ class TVisual(App):
     BINDINGS = [
         ("t", "next_theme", "Next theme"),
         ("r", "call_me", "Run"),
+        ("s", "stop", "Stop"),
         ("q", "quit", "Quit"),
     ]
 
@@ -56,13 +57,24 @@ class TVisual(App):
             self.visual_printer.clear_blah()
             manager.manage_one_prompt(prompt=prompt.text)
 
+            if self.stop:
+                self.visual_printer.clear_blah()
+                self.visual_printer.up_blah(0, "### Stopped")
+                return
+
         # Clear at the end (has to be in the thread)
         self.visual_printer.up_prompt()
         self.visual_printer.clear_blah()
         self.visual_printer.up_prompt_list()
 
     def action_call_me(self) -> None:
+        self.stop = False
         self.call_me_maybe()
+
+    # ########################################################################
+    # ############################################################# STOP #####
+    def action_stop(self):
+        self.stop = True
 
     # ########################################################################
     # ########################################################### THEMES #####
