@@ -11,4 +11,4 @@ class TPrompt(TMarkdown):
     # ########################################################################
     # ############################################################### UP #####
     def up(self, txt: str = "") -> None:
-        self.update_document(f"```rust\n{txt}\n```")
+        self.update_document(f"```text\n{txt}\n```")

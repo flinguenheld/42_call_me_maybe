@@ -22,7 +22,7 @@ advanced:
 		--functions_definition data_advanced/input/functions_definition.json \
 		--input data_advanced/input/function_calling_tests.json \
 		--output data_advanced/output/function_calls.json \
-		--model lama
+		# --model lama
 
 clean:
 	uv $(CACHE_GOINFRE) cache clean

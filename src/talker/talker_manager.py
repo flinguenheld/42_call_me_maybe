@@ -103,7 +103,7 @@ class TalkerManager:
                 )
 
                 llm_words = talker.talk()
-                json_arg = json.loads(llm_words.replace("\\", "\\\\"))
+                json_arg = json.loads(llm_words)
                 output.parameters[parameter] = json_arg[parameter]
 
             except JSONDecodeError:
