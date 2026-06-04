@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import List
-from dataclasses import dataclass
 from llm_sdk.__init__ import Small_LLM_Model
 
 from src.error.error import CallMeError
@@ -11,9 +10,16 @@ from src.utils.debug_printer import DebugPrinter
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░░█░░░█▄█░░░█░█░█▀▄░█▀█░█▀█░█▀█░█▀▀░█▀▄░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░░█░░░█░█░░░█▄█░█▀▄░█▀█░█▀▀░█▀▀░█▀▀░█▀▄░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀▀▀░▀▀▀░▀░▀░░░▀░▀░▀░▀░▀░▀░▀░░░▀░░░▀▀▀░▀░▀░░
-@dataclass()
 class LLMWrapper:
-    _llm: Small_LLM_Model = Small_LLM_Model()
+    """Wrap the given model to easily use methods.
+    Allow you to choose between three models:
+        - qwen      (Qwen/Qwen3-0.6B)
+        - deepseek  (deepseek-ai/deepseek-coder-1.3b-base)
+        - lama      (TinyLlama/TinyLlama-1.1B-Chat-v1.0)
+    """
+
+    def __init__(self, model_name: str = "Qwen/Qwen3-0.6B"):
+        self._llm: Small_LLM_Model = Small_LLM_Model(model_name)
 
     def encode(self, who: str) -> List[int]:
         return list[int](self._llm.encode(who)[0].tolist())
@@ -48,9 +54,15 @@ class LLMWrapper:
     # ########################################################################
     # ########################################################### CREATE #####
     @staticmethod
-    def create_llm() -> LLMWrapper:
+    def create_llm(model_name: str = "qwen") -> LLMWrapper:
         try:
-            return LLMWrapper()
+            if "deepseek" in model_name:
+                return LLMWrapper("deepseek-ai/deepseek-coder-1.3b-base")
+            elif "lama" in model_name:
+                return LLMWrapper("TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+            else:
+                return LLMWrapper()
+
         except Exception:
             raise CallMeError(
                 what="Impossible to start the LLM \n(are you connected ?)"

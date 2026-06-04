@@ -23,7 +23,7 @@ if __name__ == "__main__":
                 path_output=arguments["output"],
             )
 
-            llm = LLMWrapper.create_llm()
+            llm = LLMWrapper.create_llm(arguments["model"])
             llm.print_paths(deb)
 
             app = TVisual(llm, files)

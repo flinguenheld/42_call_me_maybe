@@ -10,7 +10,8 @@ def parse_call_me() -> Dict[str, str] | None:
         prog="Call me maybe",
         usage="""uv run python -m src \
 [--functions_definition <function_definition_file>] \
-[--input <input_file>] [-- output <output_file>]""",
+[--input <input_file>] [--output <output_file>] \
+[--model <deepseek|lama|qwen>]""",
         description="""Does LLMs speak the language of computers? \
 We’ll find out.""",
     )
@@ -33,6 +34,12 @@ We’ll find out.""",
         type=str,
         required=True,
     )
+    parser.add_argument(
+        "--model",
+        help="Model",
+        choices=["deepseek", "lama", "qwen"],
+        default="qwen",
+    )
 
     try:
         args = parser.parse_args()
@@ -40,6 +47,7 @@ We’ll find out.""",
             "definitions": args.functions_definition,
             "input": args.input,
             "output": args.output,
+            "model": args.model,
         }
     except SystemExit:
         return None
