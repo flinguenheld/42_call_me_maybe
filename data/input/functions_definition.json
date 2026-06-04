@@ -70,7 +70,7 @@
   },
   {
     "name": "fn_go_to_sleep",
-    "description": "Force someone to go to bed.",
+    "description": "Force someone (specifically Novanns) to go to bed.",
     "parameters": {
       "s": {
         "type": "string"

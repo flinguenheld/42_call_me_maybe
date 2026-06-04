@@ -12,6 +12,12 @@ TMarkdown {
 	border: round $primary;
 }
 
+# code-blocks
+MarkdownFence {
+	background: transparent;
+	border: none;
+}
+
 TPrompt {
 	row-span: 6;
 }

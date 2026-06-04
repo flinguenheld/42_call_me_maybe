@@ -35,22 +35,26 @@ class TPromptList(TMarkdown):
         if output:
             function = self._get_function(output.name)
             if function:
-                text += "```python\n"
-                text += f"{function.prototype()}\n"
-                text += f"{output.parameters}\n```"
+                text += f"# {current}\n"
+                text += f"    {function.prototype()}\n"
+                text += f"    {output.parameters}\n"
 
         return text
 
     def up_current(self, current: str = "") -> None:
-        document = ""
+        document = "```python\n"
         for prompt in self.files.prompts:
             if current == prompt.text:
-                document += f"### -> {prompt.text} <-\n"
+                document += f'""" -> {prompt.text} <- """\n\n'
             else:
-                document += f"###### {prompt.text}\n"
+                # document = f"##### {prompt.text}\n"
                 output = self.format_output(prompt.text)
                 if output:
-                    document += f"{output}\n"
+                    document += f"{output}\n\n"
+                else:
+                    document += f"# {prompt.text}\n\n"
+
+        document += "\n```"
         self.update_document(document)
 
     def on_mount(self) -> None:
