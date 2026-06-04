@@ -56,6 +56,7 @@ class TVisual(App):
         for prompt in self.files.prompts:
             self.visual_printer.clear_blah()
             manager.manage_one_prompt(prompt=prompt.text)
+            self.call_from_thread(self.files.save_output_in_file)
 
             if self.stop:
                 self.visual_printer.clear_blah()

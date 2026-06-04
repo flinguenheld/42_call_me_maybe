@@ -79,7 +79,7 @@ class TalkerManager:
         for parameter, value in function.parameters.items():
             try:
                 self.printer.up_blah(3, f">Search parameter '{parameter}'")
-                llm_words = ""
+                llm_words: str = ""
 
                 # Specialise the talker --
                 talker_class = TalkerParameter
@@ -103,14 +103,14 @@ class TalkerManager:
                 )
 
                 llm_words = talker.talk()
-                json_arg = json.loads(llm_words)
+                json_arg = json.loads(llm_words.replace("\\", "\\\\"))
                 output.parameters[parameter] = json_arg[parameter]
 
             except JSONDecodeError:
                 output.parameters[
                     parameter
                 ] = f'''"ERROR: Invalid JSON format \
-                    returned -> '{llm_words}'"'''
+returned -> '{llm_words}'"'''
 
             except CallMeError as e:
                 output.parameters[parameter] = (

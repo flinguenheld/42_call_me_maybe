@@ -15,7 +15,8 @@ class TFunctionList(TMarkdown):
     def up(self) -> None:
         document = "```python\n"
         for function in self.files.functions:
-            document += f"{function.prototype()}\n"
+            document += f"# {function.description}\n"
+            document += f"{function.prototype()}\n\n"
         document += "```\n"
 
         self.update_document(document)

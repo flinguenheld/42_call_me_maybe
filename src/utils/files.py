@@ -35,3 +35,13 @@ class Files:
         os.makedirs(os.path.dirname(self.path_output), exist_ok=True)
         with open(self.path_output, "w"):
             pass
+
+    # ########################################################################
+    # ############################################## SAVE OUTPUT IN FILE #####
+    def save_output_in_file(self) -> None:
+        with open(self.path_output, "w") as file:
+            file.write("[")
+            file.write(
+                ",\n".join(o.model_dump_json(indent=2) for o in self.outputs)
+            )
+            file.write("]")
