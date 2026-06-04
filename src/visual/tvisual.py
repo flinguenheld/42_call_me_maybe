@@ -68,8 +68,18 @@ class TVisual(App):
         self.visual_printer.up_prompt_list()
 
     def action_call_me(self) -> None:
-        self.stop = False
-        self.call_me_maybe()
+
+        try:
+            self.files.read_files()
+
+        except Exception as e:
+            self.tblahblah.clear()
+            self.tblahblah.up(0, "### Error on files")
+            self.tblahblah.up(1, f"##### {str(e)}")
+
+        else:
+            self.stop = False
+            self.call_me_maybe()
 
     # ########################################################################
     # ############################################################# STOP #####

@@ -12,7 +12,10 @@ class ModelPrompt(BaseModel):
     text: Annotated[str, Field(min_length=3, alias="prompt")]
 
 
-@CallMeError.catch("Input, prompt parser")
+# ░░░░░░░░░░░░░░░░░░░░░░░░░█▀█░█▀█░█▀▄░█▀▀░█▀▀░░░█▀█░█▀▄░█▀█░█▄█░█▀█░▀█▀░█▀▀░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█▀█░█▀▄░▀▀█░█▀▀░░░█▀▀░█▀▄░█░█░█░█░█▀▀░░█░░▀▀█░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░▀░░░▀░▀░▀░▀░▀▀▀░▀▀▀░░░▀░░░▀░▀░▀▀▀░▀░▀░▀░░░░▀░░▀▀▀░░
+@CallMeError.catch("Input, prompt file parser")
 def parse_prompts(path: str) -> List[ModelPrompt]:
 
     with open(path) as file:

@@ -11,6 +11,11 @@ from src.visual.tprompt_list import TPromptList
 # ░░░░░░░░░░░░░░░░░░░░░░▀░░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░░▀░░░▀░▀░▀▀▀░▀░▀░░▀░░▀▀▀░▀░▀░░
 @dataclass
 class VisualPrinter:
+    """
+    Update markdown widgets with the call_from_thread method.
+    Have to be used in a thread.
+    """
+
     app: App
     widget_prompt: TPrompt
     widget_blahblah: TBlahBlah

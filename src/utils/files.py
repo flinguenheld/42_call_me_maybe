@@ -23,6 +23,10 @@ class Files:
 
     @CallMeError.catch("Init Files")
     def __post_init__(self):
+        self.read_files()
+
+    @CallMeError.catch("Read files")
+    def read_files(self):
         self.prompts = parse_prompts(self.path_prompts)
         self.functions = parse_functions(self.path_functions)
 
