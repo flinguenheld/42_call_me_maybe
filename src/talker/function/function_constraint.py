@@ -68,3 +68,17 @@ class ConstraintFunction:
         for tokens in self.encoded_names.values():
             if column < len(tokens):
                 self.authorised_tokens.add(tokens[column])
+
+    # ########################################################################
+    # ############################################################## STR #####
+    def __str__(self) -> str:
+        """Return a formated string with all function name
+        and their description.
+
+        Used in the prompt.
+        """
+        text = ""
+        for function in self.functions_def:
+            text += f"- {function.name}: {function.description}\n"
+
+        return text

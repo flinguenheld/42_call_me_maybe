@@ -29,7 +29,7 @@ class TalkerManager:
     # ########################################################################
     # ################################################ MANAGE ONE PROMPT #####
     @CallMeError.catch("Manage prompt")
-    def manage_one_prompt(self, prompt: str):
+    def manage_one_prompt(self, prompt: str) -> None:
 
         output = ModelOutput.model_construct()
         output.prompt = prompt

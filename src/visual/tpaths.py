@@ -16,10 +16,13 @@ class TPaths(TMarkdown):
     # ########################################################################
     # ############################################################### UP #####
     def up_document(self) -> None:
+        # flake8: noqa: W291
         document = f"""> prompts:   {self.files.path_prompts}  
                        > functions: {self.files.path_functions}  
                        > output:    {self.files.path_output}  
-                    """
+                   """
+        # flake8: enable=W291
+
         document += f"\n{self.llm.paths()}"
         self.update_document(document)
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import List
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from llm_sdk.__init__ import Small_LLM_Model
 
 from src.error.error import CallMeError
@@ -13,25 +13,7 @@ from src.utils.debug_printer import DebugPrinter
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀▀▀░▀▀▀░▀░▀░░░▀░▀░▀░▀░▀░▀░▀░░░▀░░░▀▀▀░▀░▀░░
 @dataclass()
 class LLMWrapper:
-    _llm: Small_LLM_Model = field(init=False)
-    end: int = field(init=False)
-    end_of_text: int = field(init=False)
-    think_end: int = field(init=False)
-    think_start: int = field(init=False)
-    new_line: int = field(init=False)
-    bracket_close: int = field(init=False)
-
-    # TODO KEEP THAT ??????????????????????????????????
-    # TODO KEEP THAT ??????????????????????????????????
-    # TODO KEEP THAT ??????????????????????????????????
-    def __post_init__(self) -> None:
-        self._llm = Small_LLM_Model()
-        self.end = self.token_of("<|im_end|>")
-        self.end_of_text = self.token_of("<|endoftext|>")
-        self.think_end = self.token_of("</think>")
-        self.think_start = self.token_of("<think>")
-        self.new_line = self.token_of("\n")
-        self.bracket_close = self.token_of("}")
+    _llm: Small_LLM_Model = Small_LLM_Model()
 
     def encode(self, who: str) -> List[int]:
         return list[int](self._llm.encode(who)[0].tolist())
@@ -48,17 +30,23 @@ class LLMWrapper:
     def get_logits(self, tokens: List[int]) -> List[float]:
         return list[float](self._llm.get_logits_from_input_ids(tokens))
 
+    # ########################################################################
+    # ############################################################ PATHS #####
     def paths(self) -> str:
+        # flake8: noqa: W291
         return f"""> vocab:     {self._llm.get_path_to_vocab_file()}  
                    > merges:    {self._llm.get_path_to_merges_file()}  
                    > tokenizer: {self._llm.get_path_to_tokenizer_file()}  
                    """
+        # flake8: enable=W291
 
     def print_paths(self, printer: DebugPrinter) -> None:
         printer.print(self._llm.get_path_to_vocab_file())
         printer.print(self._llm.get_path_to_merges_file())
         printer.print(self._llm.get_path_to_tokenizer_file())
 
+    # ########################################################################
+    # ########################################################### CREATE #####
     @staticmethod
     def create_llm() -> LLMWrapper:
         try:

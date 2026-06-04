@@ -22,11 +22,13 @@ class Files:
     functions: List[ModelFunction] = field(init=False, default_factory=list)
 
     @CallMeError.catch("Init Files")
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.read_files()
 
+    # ########################################################################
+    # ############################################################# READ #####
     @CallMeError.catch("Read files")
-    def read_files(self):
+    def read_files(self) -> None:
         self.prompts = parse_prompts(self.path_prompts)
         self.functions = parse_functions(self.path_functions)
 

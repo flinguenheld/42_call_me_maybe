@@ -1,9 +1,9 @@
-from src.error.error import CallMeError
 from typing import List
 from itertools import count
 from dataclasses import dataclass, field
 
 from src.talker.talker import Talker
+from src.error.error import CallMeError
 from src.models.function_definition import ModelFunction
 
 
@@ -59,7 +59,7 @@ Output:"""
             - On the other tokens if 'self.authorised' has been filled
 
         Return only one JSON value.
-        Stop when the last token is '}'.
+        Stop when the last validated token ends with '}'.
         """
 
         current = ""
