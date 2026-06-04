@@ -3,13 +3,15 @@ from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer
 
 from src.utils.files import Files
+from src.manager.manager import manage_one_prompt
+from src.llm_wrapper.llm_wrapper import LLMWrapper
+
+from src.visual.tpaths import TPaths
 from src.visual.tprompt import TPrompt
 from src.visual.tblahblah import TBlahBlah
-from src.manager.manager import manage_one_prompt
 from src.visual.tprompt_list import TPromptList
-from src.llm_wrapper.llm_wrapper import LLMWrapper
-from src.visual.visual_printer import VisualPrinter
 from src.visual.tfunction_list import TFunctionList
+from src.visual.visual_printer import VisualPrinter
 
 
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█▀░█░█░▀█▀░█▀▀░█░█░█▀█░█░░░░
@@ -38,7 +40,8 @@ class TVisual(App):
         self.prompt_list = files.prompts
         self.tprompt_list = TPromptList(files)
         self.function_list = files.functions
-        self.tfunction_list = TFunctionList(files.functions)
+        self.tfunction_list = TFunctionList(files)
+        self.tpaths = TPaths(files, llm)
         self.tprompt = TPrompt()
         self.tblahblah = TBlahBlah()
 
@@ -96,6 +99,7 @@ class TVisual(App):
         yield self.tprompt_list
         yield self.tblahblah
         yield self.tfunction_list
+        yield self.tpaths
         yield Footer()
 
     def on_mount(self) -> None:

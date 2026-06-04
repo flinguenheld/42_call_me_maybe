@@ -1,7 +1,6 @@
 Screen {
 	layout: grid;
-	grid-size: 2;
-	grid-rows: 60% 40%;
+	grid-size: 2 10;
 }
 
 .box {
@@ -11,4 +10,24 @@ Screen {
 TMarkdown {
 	height: 100%;
 	border: round $primary;
+}
+
+TPrompt {
+	row-span: 6;
+}
+
+TPromptList {
+	row-span: 6;
+}
+
+TBlahBlah {
+	row-span: 4;
+}
+
+TFunctionList {
+	row-span: 3;
+}
+
+TPaths {
+	row-span: 1;
 }

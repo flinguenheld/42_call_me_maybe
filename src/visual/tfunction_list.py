@@ -1,24 +1,19 @@
-from typing import List
-
+from src.utils.files import Files
 from src.visual.tmarkdown import TMarkdown
-from src.models.function_definition import ModelFunction
 
 
-# ░░░░░░░░░░░░░░░░░░░░░▀█▀░█▀▀░█░█░█▀█░█▀▀░▀█▀░▀█▀░█▀█░█▀█░░░█░░░▀█▀░█▀▀░▀█▀░░
-# ░░░░░░░░░░░░░░░░░░░░░░█░░█▀▀░█░█░█░█░█░░░░█░░░█░░█░█░█░█░░░█░░░░█░░▀▀█░░█░░░
-# ░░░░░░░░░░░░░░░░░░░░░░▀░░▀░░░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀▀▀░▀░▀░░░▀▀▀░▀▀▀░▀▀▀░░▀░░░
 class TFunctionList(TMarkdown):
-    def __init__(self, function_list: List[ModelFunction]) -> None:
+    def __init__(self, files: Files) -> None:
         super().__init__(title="Functions")
-        self.elements = function_list
+        self.files = files
 
-    def up_list(self) -> None:
+    def up_document(self) -> None:
         document = "```python\n"
-        for function in self.elements:
-            document += f"{function.prototype()}\n\n"
+        for function in self.files.functions:
+            document += f"{function.prototype()}\n"
+        document += "```\n"
 
-        document += "```"
         self.update_document(document)
 
     def on_mount(self) -> None:
-        self.up_list()
+        self.up_document()
