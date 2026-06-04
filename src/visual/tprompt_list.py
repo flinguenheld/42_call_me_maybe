@@ -1,6 +1,5 @@
-from typing import List
+from src.utils.files import Files
 
-from src.models.prompt import ModelPrompt
 from src.models.output import ModelOutput
 from src.visual.tmarkdown import TMarkdown
 from src.models.function_definition import ModelFunction
@@ -12,23 +11,19 @@ from src.models.function_definition import ModelFunction
 class TPromptList(TMarkdown):
     def __init__(
         self,
-        prompt_list: List[ModelPrompt],
-        element_done: List[ModelOutput],
-        function_list: List[ModelFunction],
+        files: Files,
     ):
         super().__init__(title="Prompts")
-        self.prompts = prompt_list
-        self.outputs = element_done
-        self.functions = function_list
+        self.files = files
 
     def _get_output(self, prompt: str) -> ModelOutput | None:
-        for output in self.outputs:
+        for output in self.files.outputs:
             if output.prompt == prompt:
                 return output
         return None
 
     def _get_function(self, name: str) -> ModelFunction | None:
-        for function in self.functions:
+        for function in self.files.functions:
             if function.name == name:
                 return function
         return None
@@ -48,7 +43,7 @@ class TPromptList(TMarkdown):
 
     def up_current(self, current: str = "") -> None:
         document = ""
-        for prompt in self.prompts:
+        for prompt in self.files.prompts:
             if current == prompt.text:
                 document += f"### -> {prompt.text} <-\n"
             else:

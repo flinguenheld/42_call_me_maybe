@@ -1,39 +1,39 @@
-from src.talker.parameter.parameter_regex import TalkerRegex
-from src.talker.parameter.parameter_int import TalkerInt
-from src.talker.parameter.parameter_bool import TalkerBool
-from json import JSONDecodeError
 import json
-from src.talker.parameter.parameter_float import TalkerFloat
-from typing import List
+from json import JSONDecodeError
 
+from src.utils.files import Files
 from src.error.error import CallMeError
 from src.models.output import ModelOutput
 from src.llm_wrapper.llm_wrapper import LLMWrapper
 from src.visual.visual_printer import VisualPrinter
-from src.talker.function.function import TalkerFunction
 from src.models.function_definition import ModelFunction
+
+from src.talker.function.function import TalkerFunction
+from src.talker.parameter.parameter_int import TalkerInt
+from src.talker.parameter.parameter_bool import TalkerBool
 from src.talker.parameter.parameter import TalkerParameter
+from src.talker.parameter.parameter_regex import TalkerRegex
+from src.talker.parameter.parameter_float import TalkerFloat
 
 
 @CallMeError.catch("Manage prompt")
-def manage_prompt(
+def manage_one_prompt(
     llm: LLMWrapper,
-    question: str,
-    function_list: List[ModelFunction],
-    output_list: List[ModelOutput],
+    prompt: str,
+    files: Files,
     printer: VisualPrinter,
 ) -> ModelOutput:
 
     output = ModelOutput.model_construct()
-    output.prompt = question
+    output.prompt = prompt
     output.parameters = {}
 
-    printer.up_prompt_list(question)
+    printer.up_prompt_list(prompt)
     printer.up_blah(1, ">Search function...\n")
     talker_function = TalkerFunction(
         llm=llm,
-        question=question,
-        functions=function_list,
+        question=prompt,
+        functions=files.functions,
         printer=printer,
     )
 
@@ -49,13 +49,13 @@ def manage_prompt(
         # TODO ADD A CHECK TO SEE IF IT'S OK !!!!!!!!!!!!!!!
         # TODO ADD A CHECK TO SEE IF IT'S OK !!!!!!!!!!!!!!!
         # TODO ADD A CHECK TO SEE IF IT'S OK !!!!!!!!!!!!!!!
-        output_list.append(output)
+        files.outputs.append(output)
     # print(output)
 
     return output
 
 
-@CallMeError.catch("Get arguments")
+@CallMeError.catch("Get arguments for one prompt")
 def get_arguments(
     llm: LLMWrapper,
     function: ModelFunction,

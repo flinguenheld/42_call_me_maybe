@@ -1,19 +1,15 @@
-from typing import List
 from textual import work
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer
-from textual.containers import ScrollableContainer, Vertical
 
+from src.utils.files import Files
 from src.visual.tprompt import TPrompt
-from src.models.prompt import ModelPrompt
-from src.models.output import ModelOutput
 from src.visual.tblahblah import TBlahBlah
-from src.manager.manager import manage_prompt
+from src.manager.manager import manage_one_prompt
 from src.visual.tprompt_list import TPromptList
 from src.llm_wrapper.llm_wrapper import LLMWrapper
 from src.visual.visual_printer import VisualPrinter
 from src.visual.tfunction_list import TFunctionList
-from src.models.function_definition import ModelFunction
 
 
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█▀░█░█░▀█▀░█▀▀░█░█░█▀█░█░░░░
@@ -32,31 +28,29 @@ class TVisual(App):
     def __init__(
         self,
         llm: LLMWrapper,
-        prompt_list: List[ModelPrompt],
-        function_list: List[ModelFunction],
-        output_list: List[ModelOutput],
+        files: Files,
     ) -> None:
         super().__init__()
         self.llm = llm
-        self.output_list = output_list
 
-        self.prompt_list = prompt_list
-        self.tprompt_list = TPromptList(
-            prompt_list, output_list, function_list
-        )
-        self.function_list = function_list
-        self.tfunction_list = TFunctionList(function_list)
+        self.files = files
+        self.output_list = files.outputs
+        self.prompt_list = files.prompts
+        self.tprompt_list = TPromptList(files)
+        self.function_list = files.functions
+        self.tfunction_list = TFunctionList(files.functions)
         self.tprompt = TPrompt()
         self.tblahblah = TBlahBlah()
 
         self.visual_printer = VisualPrinter(
             self,
-            widget_blah=self.tblahblah,
             widget_prompt=self.tprompt,
-            prompt_list=prompt_list,
+            widget_blahblah=self.tblahblah,
             widget_prompt_list=self.tprompt_list,
         )
 
+    # ########################################################################
+    # ########################################################## CALL ME #####
     @work(exclusive=True, thread=True)
     def call_me_maybe(self) -> None:
         self.output_list.clear()
@@ -64,14 +58,14 @@ class TVisual(App):
         for prompt in self.prompt_list:
             self.visual_printer.clear_blah()
 
-            manage_prompt(
-                self.llm,
-                prompt.text,
-                self.function_list,
-                self.output_list,
-                self.visual_printer,
+            manage_one_prompt(
+                llm=self.llm,
+                prompt=prompt.text,
+                files=self.files,
+                printer=self.visual_printer,
             )
 
+        # Clear at the end (has to be in the thread)
         self.visual_printer.up_prompt()
         self.visual_printer.clear_blah()
         self.visual_printer.up_prompt_list()
