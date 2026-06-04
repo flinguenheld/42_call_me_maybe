@@ -33,9 +33,11 @@ Function: {self.function.prototype()}
 Description: {self.function.description}
 Parameter: {self.to_find}
 Output:"""
+
         self._encode_prompt()
         self.to_start = f'''{{"{self.to_find}": '''
 
+        # Limit tokens to numbers --
         for i in range(10):
             self.authorised.add(self.llm.token_of(f"{i}"))
 

@@ -27,5 +27,6 @@ Parameter: regex
 Output: {{"regex": "aeiouAEIOU"}}
 
 Output:"""
+
         self._encode_prompt()
         self.to_start = f'''{{"{self.to_find}": "'''

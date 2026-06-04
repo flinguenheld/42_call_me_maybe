@@ -37,5 +37,6 @@ Output:"""
         self._encode_prompt()
         self.to_start = f'''{{"{self.to_find}": '''
 
+        # Limit tokens --
         self.authorised.update(self.llm.encode("true"))
         self.authorised.update(self.llm.encode("false"))
