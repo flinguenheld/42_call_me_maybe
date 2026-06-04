@@ -1,9 +1,18 @@
 [
   {
-    "prompt": "Replace all numbers in \"Hello 34 I'm 233 years old\" with NUMBERS"
+    "prompt": "Add 3 to 6 and return the sum"
+  },
+  {
+    "prompt": "Add 25 to twenty two and return the result"
+  },
+  {
+    "prompt": "Add one hundred sixty five to twenty two and return the result"
   },
   {
     "prompt": "Replace all vowels in 'Programming is fun' with asterisks"
+  },
+  {
+    "prompt": "Replace all numbers in \"Hello 34 I'm 233 years old\" with NUMBERS"
   },
   {
     "prompt": "Substitute the word 'cat' with 'dog' in 'The cat sat on the mat with another cat'"

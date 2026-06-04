@@ -1,13 +1,8 @@
-import json
-from typing import List
+from typing import List, Set
 from itertools import count
-from json import JSONDecodeError
-from dataclasses import dataclass
+from dataclasses import dataclass, Field, field
 
 from src.talker.talker import Talker
-from src.error.error import CallMeError
-from src.models.output import ModelOutput
-from src.visual.visual_printer import VisualPrinter
 from src.models.function_definition import ModelFunction
 
 
@@ -16,18 +11,21 @@ from src.models.function_definition import ModelFunction
 # ░░░░░░░░░░░░░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀░░░▀░░░▀░▀░▀░▀░▀░▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀░▀░░
 @dataclass()
 class TalkerParameter(Talker):
-    def update_prompt(
-        self,
-        function: ModelFunction,
-        to_find: str,
-    ) -> None:
+    function: ModelFunction
+    to_find: str
+    to_start: str = field(init=False)
+    not_found: str = field(init=False)
+
+    def __post_init__(self) -> None:
         self.prompt = f"""You are a JSON-only extraction tool. \
 Never output anything other than a JSON object.
+You have to find a string.
+You have to return a string.
 
 Sentence: {self.question}
-Function: {function.prototype()}
-Description: {function.description}
-Extract the value of the parameter: {to_find}
+Function: {self.function.prototype()}
+Description: {self.function.description}
+Extract the value of the parameter: {self.to_find}
 
 Output a single JSON object with exactly one key.
 
@@ -39,17 +37,18 @@ Output: {{"destination": "Cardiff"}}
 
 Now extract:
 Sentence: {self.question}
-Function: {function.prototype()}
-Description: {function.description}
-Parameter: {to_find}
+Function: {self.function.prototype()}
+Description: {self.function.description}
+Parameter: {self.to_find}
 Output:"""
+        self.to_start = f'''{{"{self.to_find}": "'''
+        self.not_found = f'''{{"{self.to_find}": "NOT FOUND"}}'''
         self._encode_prompt()
 
-    def talk(self, parameter: str) -> str:
+    def talk(self) -> str:
 
         current = ""
-        to_start = f'''{{"{parameter}": "'''
-        to_start_encoded = self.llm.encode(to_start)
+        to_start_encoded = self.llm.encode(self.to_start)
 
         for turn in count():
             self.printer.up_blah(4, f"```json\nturn {turn}\n\n")
@@ -76,36 +75,4 @@ Output:"""
 
             self.printer.up_blah(5, f"{current}\n```")
 
-        return f'{to_start} NO_FOUND"}}'
-
-    @CallMeError.catch("Get arguments")
-    def get_arguments(
-        self,
-        function: ModelFunction,
-        output: ModelOutput,
-        printer: VisualPrinter,
-    ) -> None:
-
-        for parameter in function.parameters.keys():
-            try:
-                printer.up_blah(3, f">Search parameter '{parameter}'")
-                self.update_prompt(function, parameter)
-                json_arg = json.loads(self.talk(parameter))
-                output.parameters[parameter] = json_arg[parameter]
-
-                # TODO add a conversion for numbers ??
-
-            except JSONDecodeError as e:
-                raise CallMeError(
-                    blah=str(e),
-                    prompt=self.prompt,
-                    what=f"Can't get the parameter '{parameter}'",
-                    why="The returned JSON format is invalid",
-                )
-
-            except Exception as e:
-                raise CallMeError(
-                    what=f"Can't get the parameter '{parameter}'",
-                    prompt=self.prompt,
-                    error=str(e),
-                )
+        return self.not_found

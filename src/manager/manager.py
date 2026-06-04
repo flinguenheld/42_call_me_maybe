@@ -1,3 +1,9 @@
+from src.talker.parameter.parameter_regex import TalkerRegex
+from src.talker.parameter.parameter_int import TalkerInt
+from src.talker.parameter.parameter_bool import TalkerBool
+from json import JSONDecodeError
+import json
+from src.talker.parameter.parameter_float import TalkerFloat
 from typing import List
 
 from src.error.error import CallMeError
@@ -38,13 +44,7 @@ def manage_prompt(
         printer.up_blah(1, ">Function found\n")
         printer.up_blah(2, f"```python\n{function.prototype()}\n```\n")
 
-        talker_parameters = TalkerParameter(
-            llm=llm,
-            question=question,
-            printer=printer,
-        )
-
-        talker_parameters.get_arguments(function, output, printer)
+        get_arguments(llm, function, output, printer)
 
         # TODO ADD A CHECK TO SEE IF IT'S OK !!!!!!!!!!!!!!!
         # TODO ADD A CHECK TO SEE IF IT'S OK !!!!!!!!!!!!!!!
@@ -53,3 +53,58 @@ def manage_prompt(
     # print(output)
 
     return output
+
+
+@CallMeError.catch("Get arguments")
+def get_arguments(
+    llm: LLMWrapper,
+    function: ModelFunction,
+    output: ModelOutput,
+    printer: VisualPrinter,
+) -> None:
+
+    for parameter, value in function.parameters.items():
+        try:
+            printer.up_blah(3, f">Search parameter '{parameter}'")
+
+            if parameter.lower() == "regex":
+                talker = TalkerRegex(
+                    output.prompt, llm, printer, function, parameter
+                )
+            else:
+                match value["type"]:
+                    case "number" | "float":
+                        talker = TalkerFloat(
+                            output.prompt, llm, printer, function, parameter
+                        )
+                    case "integer" | "int":
+                        talker = TalkerInt(
+                            output.prompt, llm, printer, function, parameter
+                        )
+                    case "boolean" | "bool":
+                        talker = TalkerBool(
+                            output.prompt, llm, printer, function, parameter
+                        )
+                    case _:
+                        talker = TalkerParameter(
+                            output.prompt, llm, printer, function, parameter
+                        )
+
+            json_arg = json.loads(talker.talk())
+            output.parameters[parameter] = json_arg[parameter]
+
+        # TODO: CHANGE THAT TO SET VALUE AS NOT FOUND ?
+        except JSONDecodeError as e:
+            raise CallMeError(
+                blah=str(e),
+                prompt=output.prompt,
+                what=f"Can't get the parameter '{parameter}'",
+                why="The returned JSON format is invalid",
+            )
+
+        except Exception as e:
+            raise CallMeError(
+                what=f"Can't get the parameter '{parameter}'",
+                prompt=output.prompt,
+                error=str(e),
+            )

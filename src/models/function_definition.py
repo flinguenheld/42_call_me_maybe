@@ -25,6 +25,8 @@ class ModelFunction(BaseModel):
                 txt += f"{key}: float, "
             elif val["type"] == "integer":
                 txt += f"{key}: int, "
+            elif val["type"] == "boolean":
+                txt += f"{key}: bool, "
             else:
                 txt += f"{key}: {val['type']}, "
         txt = txt.rstrip(", ")

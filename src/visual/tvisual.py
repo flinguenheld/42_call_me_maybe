@@ -2,7 +2,7 @@ from typing import List
 from textual import work
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer
-from textual.containers import ScrollableContainer
+from textual.containers import ScrollableContainer, Vertical
 
 from src.visual.tprompt import TPrompt
 from src.models.prompt import ModelPrompt
@@ -98,14 +98,10 @@ class TVisual(App):
     # ################################################### COMPOSE / MOUNT ####
     def compose(self) -> ComposeResult:
         yield Header()
-        with ScrollableContainer(classes="box"):
-            yield self.tprompt
-        with ScrollableContainer(classes="box"):
-            yield self.tprompt_list
-        with ScrollableContainer(classes="box"):
-            yield self.tblahblah
-        with ScrollableContainer(classes="box"):
-            yield self.tfunction_list
+        yield self.tprompt
+        yield self.tprompt_list
+        yield self.tblahblah
+        yield self.tfunction_list
         yield Footer()
 
     def on_mount(self) -> None:
