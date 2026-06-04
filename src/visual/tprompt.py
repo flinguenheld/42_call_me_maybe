@@ -8,5 +8,7 @@ class TPrompt(TMarkdown):
     def __init__(self) -> None:
         super().__init__(title="Current prompt")
 
-    def up_txt(self, txt: str = "") -> None:
+    # ########################################################################
+    # ############################################################### UP #####
+    def up(self, txt: str = "") -> None:
         self.update_document(f"```rust\n{txt}\n```")

@@ -12,9 +12,13 @@ class TMarkdown(Static):
         self.area = Markdown()
         self.border_title = title
 
+    # ########################################################################
+    # ############################################################### UP #####
     def update_document(self, document: str = "") -> None:
         self.area.update(document)
 
+    # ########################################################################
+    # ########################################################## COMPOSE #####
     def compose(self) -> ComposeResult:
         with ScrollableContainer():
             yield self.area

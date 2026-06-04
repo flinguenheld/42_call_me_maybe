@@ -27,23 +27,16 @@ class TVisual(App):
         ("q", "quit", "Quit"),
     ]
 
-    def __init__(
-        self,
-        llm: LLMWrapper,
-        files: Files,
-    ) -> None:
+    def __init__(self, llm: LLMWrapper, files: Files) -> None:
         super().__init__()
         self.llm = llm
 
         self.files = files
-        self.output_list = files.outputs
-        self.prompt_list = files.prompts
-        self.tprompt_list = TPromptList(files)
-        self.function_list = files.functions
-        self.tfunction_list = TFunctionList(files)
-        self.tpaths = TPaths(files, llm)
         self.tprompt = TPrompt()
         self.tblahblah = TBlahBlah()
+        self.tpaths = TPaths(files, llm)
+        self.tprompt_list = TPromptList(files)
+        self.tfunction_list = TFunctionList(files)
 
         self.visual_printer = VisualPrinter(
             self,
@@ -56,10 +49,10 @@ class TVisual(App):
     # ########################################################## CALL ME #####
     @work(exclusive=True, thread=True)
     def call_me_maybe(self) -> None:
-        self.output_list.clear()
+        self.files.outputs.clear()
         manager = TalkerManager(self.llm, self.files, self.visual_printer)
 
-        for prompt in self.prompt_list:
+        for prompt in self.files.prompts:
             self.visual_printer.clear_blah()
             manager.manage_one_prompt(prompt=prompt.text)
 

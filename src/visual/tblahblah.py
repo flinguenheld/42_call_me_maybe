@@ -11,11 +11,9 @@ class TBlahBlah(TMarkdown):
         super().__init__(title="Blabla")
         self.lines: Dict[int, str] = dict()
 
-    def clear(self) -> None:
-        self.lines.clear()
-        self.update_document("")
-
-    def set_txt(self, who: int, what: str) -> None:
+    # ########################################################################
+    # ############################################################### UP #####
+    def up(self, who: int, what: str) -> None:
         self.lines[who] = what
 
         document = ""
@@ -24,3 +22,9 @@ class TBlahBlah(TMarkdown):
                 document += f"{self.lines[i]}\n"
 
         self.update_document(document)
+
+    # ########################################################################
+    # ############################################################ CLEAR #####
+    def clear(self) -> None:
+        self.lines.clear()
+        self.update_document("")

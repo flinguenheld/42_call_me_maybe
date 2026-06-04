@@ -16,6 +16,25 @@ class TPromptList(TMarkdown):
         super().__init__(title="Prompts")
         self.files = files
 
+    # ########################################################################
+    # ############################################################### UP #####
+    def up(self, current: str = "") -> None:
+        document = "```python\n"
+        for prompt in self.files.prompts:
+            if current == prompt.text:
+                document += f'""" -> {prompt.text} <- """\n\n'
+            else:
+                output = self.format(prompt.text)
+                if output:
+                    document += f"{output}\n\n"
+                else:
+                    document += f"# {prompt.text}\n\n"
+
+        document += "\n```"
+        self.update_document(document)
+
+    # ########################################################################
+    # ################################################## FORMAT DOCUMENT #####
     def _get_output(self, prompt: str) -> ModelOutput | None:
         for output in self.files.outputs:
             if output.prompt == prompt:
@@ -28,7 +47,7 @@ class TPromptList(TMarkdown):
                 return function
         return None
 
-    def format_output(self, current: str) -> str:
+    def format(self, current: str) -> str:
 
         text = ""
         output = self._get_output(current)
@@ -41,21 +60,7 @@ class TPromptList(TMarkdown):
 
         return text
 
-    def up_current(self, current: str = "") -> None:
-        document = "```python\n"
-        for prompt in self.files.prompts:
-            if current == prompt.text:
-                document += f'""" -> {prompt.text} <- """\n\n'
-            else:
-                # document = f"##### {prompt.text}\n"
-                output = self.format_output(prompt.text)
-                if output:
-                    document += f"{output}\n\n"
-                else:
-                    document += f"# {prompt.text}\n\n"
-
-        document += "\n```"
-        self.update_document(document)
-
+    # ########################################################################
+    # ############################################################ MOUNT #####
     def on_mount(self) -> None:
-        self.up_current()
+        self.up()

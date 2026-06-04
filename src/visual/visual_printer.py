@@ -19,7 +19,7 @@ class VisualPrinter:
     # ########################################################################
     # ######################################################### BLAHBLAH #####
     def up_blah(self, who: int, what: str) -> None:
-        self.app.call_from_thread(self.widget_blahblah.set_txt, who, what)
+        self.app.call_from_thread(self.widget_blahblah.up, who, what)
 
     def clear_blah(self) -> None:
         self.app.call_from_thread(self.widget_blahblah.clear)
@@ -28,11 +28,11 @@ class VisualPrinter:
     # ########################################################### PROMPT #####
     def up_prompt(self, text: str = "") -> None:
         self.app.call_from_thread(
-            self.widget_prompt.up_txt,
+            self.widget_prompt.up,
             text,
         )
 
     # ########################################################################
     # ###################################################### PROMPT LIST #####
     def up_prompt_list(self, current: str = "") -> None:
-        self.app.call_from_thread(self.widget_prompt_list.up_current, current)
+        self.app.call_from_thread(self.widget_prompt_list.up, current)
