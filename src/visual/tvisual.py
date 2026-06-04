@@ -3,8 +3,8 @@ from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer
 
 from src.utils.files import Files
-from src.manager.manager import manage_one_prompt
 from src.llm_wrapper.llm_wrapper import LLMWrapper
+from src.talker.talker_manager import TalkerManager
 
 from src.visual.tpaths import TPaths
 from src.visual.tprompt import TPrompt
@@ -57,16 +57,11 @@ class TVisual(App):
     @work(exclusive=True, thread=True)
     def call_me_maybe(self) -> None:
         self.output_list.clear()
+        manager = TalkerManager(self.llm, self.files, self.visual_printer)
 
         for prompt in self.prompt_list:
             self.visual_printer.clear_blah()
-
-            manage_one_prompt(
-                llm=self.llm,
-                prompt=prompt.text,
-                files=self.files,
-                printer=self.visual_printer,
-            )
+            manager.manage_one_prompt(prompt=prompt.text)
 
         # Clear at the end (has to be in the thread)
         self.visual_printer.up_prompt()

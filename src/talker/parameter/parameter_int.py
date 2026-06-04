@@ -1,31 +1,43 @@
 from dataclasses import dataclass
-
 from src.talker.parameter.parameter import TalkerParameter
 
 
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█▀░█▀█░█░░░█░█░█▀▀░█▀▄░░░▀█▀░█▀█░▀█▀░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░█▀█░█░░░█▀▄░█▀▀░█▀▄░░░░█░░█░█░░█░░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀░░░▀▀▀░▀░▀░░▀░░░
 @dataclass()
 class TalkerInt(TalkerParameter):
     def __post_init__(self) -> None:
-        self.prompt = f"""You are a JSON-only extraction tool.
-Output a single JSON object with exactly one key.
-Extract an integer parameter from the sentence.
-If the value is written as text, convert it to a digit.
+        self.prompt = f"""You are a JSON-only extraction tool. \
+Never output anything other than a JSON object.
+You have to find a number.
+If the number is in plain text, convert in int.
+You have to return a int.
 
 Sentence: {self.question}
 Function: {self.function.prototype()}
 Description: {self.function.description}
 Extract the value of the parameter: {self.to_find}
 
-Examples:
-Sentence: Add 546 to 102 and return the result
-Function: fn_how_many(a: int, {self.to_find}: int)
+Output a single JSON object with exactly one key.
+
+Example:
+Sentence: Add 754 to 635 and return the result
+Function: fn_how_many(a: int, b: int)
+Parameter: b
+Output: {{"b": 635}}
+
+Now extract:
+Sentence: {self.question}
+Function: {self.function.prototype()}
+Description: {self.function.description}
 Parameter: {self.to_find}
-Output: {{"{self.to_find}": 102}}
-
-Sentence: Repeat the word 'hello' five times
-Function: fn_repeat(word: str, {self.to_find}: int)
-Parameter to extract: {self.to_find}
-Output: {{"{self.to_find}": 5}}
-
 Output:"""
         self._encode_prompt()
+        self.to_start = f'''{{"{self.to_find}": '''
+
+        for i in range(10):
+            self.authorised.add(self.llm.token_of(f"{i}"))
+
+        self.authorised.add(self.llm.token_of("-"))
+        self.authorised.add(self.llm.token_of("}"))

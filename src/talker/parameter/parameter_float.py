@@ -1,9 +1,10 @@
-from typing import List
 from dataclasses import dataclass
-
 from src.talker.parameter.parameter import TalkerParameter
 
 
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█▀░█▀█░█░░░█░█░█▀▀░█▀▄░░░█▀▀░█░░░█▀█░█▀█░▀█▀░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░█▀█░█░░░█▀▄░█▀▀░█▀▄░░░█▀▀░█░░░█░█░█▀█░░█░░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀░░░▀░░░▀▀▀░▀▀▀░▀░▀░░▀░░░
 @dataclass()
 class TalkerFloat(TalkerParameter):
     def __post_init__(self) -> None:
@@ -34,7 +35,6 @@ Parameter: {self.to_find}
 Output:"""
         self._encode_prompt()
         self.to_start = f'''{{"{self.to_find}": '''
-        self.not_found = f'''{{"{self.to_find}": "NOT FOUND"}}'''
 
         for i in range(10):
             self.authorised.add(self.llm.token_of(f"{i}"))

@@ -3,6 +3,9 @@ from dataclasses import dataclass
 from src.talker.parameter.parameter import TalkerParameter
 
 
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█▀░█▀█░█░░░█░█░█▀▀░█▀▄░░░█▀▄░█▀█░█▀█░█░░░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░█▀█░█░░░█▀▄░█▀▀░█▀▄░░░█▀▄░█░█░█░█░█░░░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀░░░▀▀░░▀▀▀░▀▀▀░▀▀▀░░
 @dataclass()
 class TalkerBool(TalkerParameter):
     def __post_init__(self) -> None:
@@ -21,9 +24,9 @@ Output a single JSON object with exactly one key.
 
 Example:
 Sentence: The first door is closed and the second is open
-Function: fn_is_valid(a: bool, b: bool)
-Parameter: a
-Output: {{"a": true}}
+Function: fn_are_open(a: bool, b: bool)
+Parameter: b
+Output: {{"b": true}}
 
 Now extract:
 Sentence: {self.question}
@@ -32,3 +35,7 @@ Description: {self.function.description}
 Parameter: {self.to_find}
 Output:"""
         self._encode_prompt()
+        self.to_start = f'''{{"{self.to_find}": '''
+
+        self.authorised.update(self.llm.encode("true"))
+        self.authorised.update(self.llm.encode("false"))

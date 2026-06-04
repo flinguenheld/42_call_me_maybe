@@ -1,4 +1,4 @@
-from typing import List, Set
+from typing import List, Set, ClassVar
 from dataclasses import dataclass, field
 
 from src.llm_wrapper.llm_wrapper import LLMWrapper
@@ -10,6 +10,8 @@ from src.visual.visual_printer import VisualPrinter
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀░░
 @dataclass
 class Talker:
+    MAX_TOKENS_PER_CONV: ClassVar[int] = 50
+
     question: str
     llm: LLMWrapper
     printer: VisualPrinter
