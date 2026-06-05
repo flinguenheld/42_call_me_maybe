@@ -19,31 +19,41 @@ class TalkerParameter(Talker):
     # ########################################################################
     # ########################################################### PROMPT #####
     def __post_init__(self) -> None:
-        self.prompt = f"""You are a JSON-only extraction tool. \
-Never output anything other than a JSON object.
-You have to find a string.
-You have to return a string.
-Double all backslash.
+        #         self.prompt = f"""You are a JSON-only extraction tool. \
+        # Never output anything other than a JSON object.
+        # You have to find a string.
+        # You have to return a string.
+        # Double all backslash.
 
-Sentence: {self.question}
+        # Sentence: {self.question}
+        # Function: {self.function.prototype()}
+        # Description: {self.function.description}
+        # Extract the value of the parameter: {self.to_find}
+
+        # Output a single JSON object with exactly one key.
+
+        # Example:
+        # Sentence: Book a flight to Cardiff for 3 people
+        # Function: fn_go(destination: str)
+        # Parameter: destination
+        # Output: {{"destination": "Cardiff"}}
+
+        # Now extract:
+        # Sentence: {self.question}
+        # Function: {self.function.prototype()}
+        # Description: {self.function.description}
+        # Parameter: {self.to_find}
+        # Output:"""
+        self.prompt = f"""You are a helpful assistant that calls a function based on a user query.
+
 Function: {self.function.prototype()}
 Description: {self.function.description}
-Extract the value of the parameter: {self.to_find}
+Query: {self.question}
 
-Output a single JSON object with exactly one key.
+Get the string value of the parameter "{self.to_find}".
 
-Example:
-Sentence: Book a flight to Cardiff for 3 people
-Function: fn_go(destination: str)
-Parameter: destination
-Output: {{"destination": "Cardiff"}}
-
-Now extract:
-Sentence: {self.question}
-Function: {self.function.prototype()}
-Description: {self.function.description}
-Parameter: {self.to_find}
-Output:"""
+Respond with a JSON object with ONLY ONE ENTRY:
+{{"{self.to_find}": \""""
 
         self.to_start = f'''{{"{self.to_find}": "'''
         self._encode_prompt()
@@ -55,17 +65,12 @@ Output:"""
         """Common talk method for parameters.
 
         Talk to the LLM, filter and save the returned tokens.
-        Apply two restrictions:
-            - On the beginning with 'self.to_start'
-            - On the other tokens if 'self.authorised' has been filled
+        Apply restrictions if 'self.authorised' has been filled
 
         Return only one JSON value.
-        Stop when the last validated token ends with '}'.
+        Stop when the last validated token is the end of the field.
         """
 
-        # Skip the first turns with to_start --
-        # to_start_encoded = self.llm.encode(self.to_start)
-        # self.prompt_encoded.extend(to_start_encoded)
         current = self.to_start
 
         for turn in count():
@@ -80,12 +85,21 @@ Output:"""
             token = self._get_token_max_value(logits)
 
             self.prompt_encoded.append(token)
-            current += self.llm.decode(token)
 
-            if current.rstrip()[-1] == "}" and current.rstrip()[-2] != "\\":
-                self.printer.up_blah(10, current)
+            decoded = self.llm.decode(token)
+            current += decoded
+            self.printer.up_blah(5, f"Token: '{decoded}'\n")
+
+            # Check the end of the field
+            if decoded == '",' and current[-3] != "\\":
+                return current.rstrip()[:-1] + "}"
+
+            if decoded == '"}\n' and current[-4] != "\\":
                 return current.rstrip()
 
-            self.printer.up_blah(5, f"{current}\n```")
+            if current.rstrip()[-1] == "}" and current.rstrip()[-2] != "\\":
+                return current.rstrip()
+
+            self.printer.up_blah(6, f"{current}\n```")
 
         raise CallMeError(what="Nothing to say.")

@@ -113,9 +113,11 @@ class TalkerManager:
 returned -> '{llm_words}'"'''
 
             except CallMeError as e:
-                output.parameters[parameter] = (
-                    f'''"ERROR: {e.context["what"][:30]}"'''
-                )
+                # output.parameters[parameter] = (
+                #     f'''"ERROR: {e.context["what"][:30]}"'''
+                # )
+                output.parameters[parameter] = f'''"ERROR: '{llm_words}'"'''
 
             except Exception as e:
-                output.parameters[parameter] = f'''"ERROR: {str(e)[:30]}"'''
+                # output.parameters[parameter] = f'''"ERROR: {str(e)[:30]}"'''
+                output.parameters[parameter] = f'''"ERROR: '{llm_words}'"'''

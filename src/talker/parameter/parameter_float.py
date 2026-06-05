@@ -36,17 +36,12 @@ Respond with a JSON object:
 
     # ########################################################################
     # ############################################################# TALK #####
-    @CallMeError.catch("Talk")  # noqa: F821
+    @CallMeError.catch("Talk")
     def talk(self) -> str:
-        """Common talk method for parameters.
+        """Special talk for float.
+        Limit logits to 0123456789.-
 
-        Talk to the LLM, filter and save the returned tokens.
-        Apply two restrictions:
-            - On the beginning with 'self.to_start'
-            - On the other tokens if 'self.authorised' has been filled
-
-        Return only one JSON value.
-        Stop when the last validated token ends with '}'.
+        Only get two decimals.
         """
 
         current = self.to_start
@@ -63,10 +58,11 @@ Respond with a JSON object:
             logits: List[float] = self.llm.get_logits(self.prompt_encoded)
 
             token = self._get_token_max_value(logits)
-
             self.prompt_encoded.append(token)
-            current += self.llm.decode(token)
 
-            self.printer.up_blah(5, f"{current}\n```")
+            decoded = self.llm.decode(token)
+            current += decoded
+            self.printer.up_blah(5, f"Token: '{decoded}'\n")
+            self.printer.up_blah(6, f"{current}\n```")
 
         raise CallMeError(what="Nothing to say.")
