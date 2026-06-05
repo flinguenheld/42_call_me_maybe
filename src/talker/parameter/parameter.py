@@ -63,21 +63,16 @@ Output:"""
         Stop when the last validated token ends with '}'.
         """
 
-        current = ""
+        # Skip the first turns with to_start --
         to_start_encoded = self.llm.encode(self.to_start)
+        self.prompt_encoded.extend(to_start_encoded)
+        current = self.to_start
 
         for turn in count():
             self.printer.up_blah(4, f"```json\nturn {turn}\n\n")
             logits: List[float] = self.llm.get_logits(self.prompt_encoded)
 
-            # Skip the first turns with to_start --
-            # I tried to directly add it in the prompt but it looks better
-            # to call get_logit token per token -_-
-            if turn < len(to_start_encoded):
-                current += self.llm.decode(to_start_encoded[turn])
-                self.prompt_encoded.append(to_start_encoded[turn])
-
-            elif turn > self.MAX_TOKENS_PER_CONV:
+            if turn > self.MAX_TOKENS_PER_CONV:
                 raise CallMeError(
                     what=f"Token limit reached ({self.MAX_TOKENS_PER_CONV})."
                 )
