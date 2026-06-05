@@ -1,17 +1,14 @@
 NAME="call_me_maybe.py"
-# CACHE_GOINFRE=--cache-dir "~/goinfre/.cache_call_me/"
-CACHE_GOINFRE=
+CACHE_GOINFRE=--cache-dir "~/goinfre/.cache_call_me/"
+# CACHE_GOINFRE=
 
 install:
 	uv $(CACHE_GOINFRE) sync
 
-run:
-	uv $(CACHE_GOINFRE) run python -m $(NAME)
-
 helix:
 	uv $(CACHE_GOINFRE) run hx .
 
-debug:
+examples:
 	uv $(CACHE_GOINFRE) run python -m src \
 		--functions_definition data/input/functions_definition.json \
 		--input data/input/function_calling_tests.json \
@@ -42,3 +39,5 @@ lint:
 lint-strict:
 	- uv $(CACHE_GOINFRE) run flake8 . --extend-exclude '.venv,llm_sdk/'
 	- uv $(CACHE_GOINFRE) run mypy . --strict --exclude 'llm_sdk/'
+
+.PHONY: install helix examples advance clean lint lint-strict

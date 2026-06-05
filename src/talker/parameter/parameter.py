@@ -88,7 +88,10 @@ Output:"""
                 self.prompt_encoded.append(token)
                 current += self.llm.decode(token)
 
-                if current.rstrip()[-1] == "}":
+                if (
+                    current.rstrip()[-1] == "}"
+                    and current.rstrip()[-2] != "\\"
+                ):
                     return current.rstrip()
 
             self.printer.up_blah(5, f"{current}\n```")
