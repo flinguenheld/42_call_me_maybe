@@ -16,7 +16,6 @@ class TalkerFloat(TalkerParameter):
 function based on an user query.
 
 Function: {self.function.prototype()}
-Description: {self.function.description}
 Query: {self.question}
 
 You have to get the value "{self.to_find}"

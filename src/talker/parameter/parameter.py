@@ -1,4 +1,5 @@
-from typing import List
+import json
+from typing import List, Dict
 from itertools import count
 from dataclasses import dataclass, field
 
@@ -15,48 +16,44 @@ class TalkerParameter(Talker):
     function: ModelFunction
     to_find: str
     to_start: str = field(init=False)
+    found_parameters: Dict[str, str | int | float | bool]
 
     # ########################################################################
     # ########################################################### PROMPT #####
     def __post_init__(self) -> None:
-        #         self.prompt = f"""You are a JSON-only extraction tool. \
-        # Never output anything other than a JSON object.
-        # You have to find a string.
-        # You have to return a string.
-        # Double all backslash.
 
-        # Sentence: {self.question}
-        # Function: {self.function.prototype()}
-        # Description: {self.function.description}
-        # Extract the value of the parameter: {self.to_find}
-
-        # Output a single JSON object with exactly one key.
-
-        # Example:
-        # Sentence: Book a flight to Cardiff for 3 people
-        # Function: fn_go(destination: str)
-        # Parameter: destination
-        # Output: {{"destination": "Cardiff"}}
-
-        # Now extract:
-        # Sentence: {self.question}
-        # Function: {self.function.prototype()}
-        # Description: {self.function.description}
-        # Parameter: {self.to_find}
-        # Output:"""
-        self.prompt = f"""You are a helpful assistant that calls a function based on a user query.
+        self.prompt = f"""You are a helpful assistant that calls a \
+function based on a user query.
 
 Function: {self.function.prototype()}
-Description: {self.function.description}
 Query: {self.question}
 
-Get the string value of the parameter "{self.to_find}".
+Get "{self.to_find}". Do NOT transform.
 
 Respond with a JSON object with ONLY ONE ENTRY:
 {{"{self.to_find}": \""""
 
         self.to_start = f'''{{"{self.to_find}": "'''
         self._encode_prompt()
+
+    # TODO REMOVE THAT ---------------------------
+    # TODO REMOVE THAT ---------------------------
+    # TODO REMOVE THAT ---------------------------
+    # TODO REMOVE THAT ---------------------------
+    # ########################################################################
+    # #################################################### ALREADY FOUND #####
+    def format_already_found(self) -> str:
+        already = ""
+        if self.found_parameters:
+            # already = f"Known: {json.dumps(self.found_parameters)}"
+            already = "Already found:\n"
+            for param, argument in self.found_parameters.items():
+                if isinstance(argument, int) or isinstance(argument, float):
+                    already += f"- {param}: {argument}\n"
+                else:
+                    already += f"- {param}: {argument}\n"
+
+        return already
 
     # ########################################################################
     # ############################################################# TALK #####
@@ -96,6 +93,12 @@ Respond with a JSON object with ONLY ONE ENTRY:
 
             if decoded == '"}\n' and current[-4] != "\\":
                 return current.rstrip()
+
+            if current.rstrip()[-4:] == '", "':
+                return current[:-3] + "}"
+
+            if current.rstrip()[-2:] == '",' and current.rstrip()[-3] != "\\":
+                return current.rstrip()[:-1] + "}"
 
             if current.rstrip()[-1] == "}" and current.rstrip()[-2] != "\\":
                 return current.rstrip()

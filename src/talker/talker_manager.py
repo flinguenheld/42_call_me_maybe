@@ -100,6 +100,7 @@ class TalkerManager:
                     self.printer,
                     function,
                     parameter,
+                    output.parameters,
                 )
 
                 llm_words = talker.talk()
@@ -113,11 +114,9 @@ class TalkerManager:
 returned -> '{llm_words}'"'''
 
             except CallMeError as e:
-                # output.parameters[parameter] = (
-                #     f'''"ERROR: {e.context["what"][:30]}"'''
-                # )
-                output.parameters[parameter] = f'''"ERROR: '{llm_words}'"'''
+                output.parameters[parameter] = (
+                    f'''"ERROR: {e.context["what"]}"'''
+                )
 
             except Exception as e:
-                # output.parameters[parameter] = f'''"ERROR: {str(e)[:30]}"'''
-                output.parameters[parameter] = f'''"ERROR: '{llm_words}'"'''
+                output.parameters[parameter] = f'''"ERROR: {str(e)}"'''

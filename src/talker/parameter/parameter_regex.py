@@ -41,14 +41,13 @@ class TalkerRegex(TalkerParameter):
         # Parameter: regex
         # Output:{{"{self.to_find}": \""""
 
-        self.prompt = f"""You are a helpful assistant that calls a function based on a user query.
+        self.prompt = f"""You are a helpful assistant that calls a \
+function based on a user query.
 
 Function: {self.function.prototype()}
-Description: {self.function.description}
 Query: {self.question}
 
-Get the string value of the parameter "{self.to_find}".
-The parameter is a regular expression.
+Get the REGEX.
 
 Respond with a JSON object with ONLY ONE ENTRY:
 {{"{self.to_find}": \""""
