@@ -1,4 +1,8 @@
+from typing import List
+from itertools import count
 from dataclasses import dataclass
+
+from src.error.error import CallMeError
 from src.talker.parameter.parameter import TalkerParameter
 
 
@@ -8,53 +12,17 @@ from src.talker.parameter.parameter import TalkerParameter
 @dataclass()
 class TalkerFloat(TalkerParameter):
     def __post_init__(self) -> None:
-        self.prompt = f"""You are a JSON-only parameter extraction tool.
-Your ONLY job is to copy the number that appears \
-in the sentence into the output.
-Do NOT solve, compute, or evaluate. Do NOT output the answer to the question.
-The sentence is a QUESTION, not a computation. \
-Extract the INPUT, not the RESULT.
-If the value is written as words (e.g. "five"), convert it to a float.
+        self.prompt = f""" You are a helpful assistant that call a \
+function based on an user query.
 
 Function: {self.function.prototype()}
 Description: {self.function.description}
-Sentence: {self.question}
+Query: {self.question}
 
-GOOD example:
-Sentence: What is the square root of 9025?
-Function: fn_square_root(a: float)
-Parameter: a
-Output: {{"a": 9025.0}}
+You have to get the value "{self.to_find}"
 
-BAD example (do NOT do this):
-Sentence: What is the square root of 9?
-Function: fn_square_root(a: float)
-Parameter: a
-Output: {{"a": 3.0}}  <- WRONG: 3 is the computed result, not the input value
-
-GOOD example:
-Sentence: What is the sum of 54 and 154?
-Function: fn_add_numbers(a: float, b: float)
-Parameter: a
-Output: {{"a": 54.0}}
-
-BAD example (do NOT do this):
-Sentence: What is the sum of 26 and 13?
-Function: fn_add_numbers(a: float, b: float)
-Parameter: a
-Output: {{"a": 40.0}}  <- WRONG: 40 is the computed result, not the value of a
-
-GOOD example:
-Sentence: Add 754 to 635 and return the result
-Function: fn_how_many(a: float, b: float)
-Parameter: b
-Output: {{"b": 635.0}}
-
-Now extract — do NOT compute, just copy the number from the sentence:
-Sentence: {self.question}
-Function: {self.function.prototype()}
-Parameter: {self.to_find}
-Output:"""
+Respond with a JSON object:
+{{"{self.to_find}": """
 
         self._encode_prompt()
         self.to_start = f'''{{"{self.to_find}": '''
@@ -63,6 +31,42 @@ Output:"""
         for i in range(10):
             self.authorised.add(self.llm.token_of(f"{i}"))
 
-        self.authorised.add(self.llm.token_of("-"))
         self.authorised.add(self.llm.token_of("."))
-        self.authorised.add(self.llm.token_of("}"))
+        self.authorised.add(self.llm.token_of("-"))
+
+    # ########################################################################
+    # ############################################################# TALK #####
+    @CallMeError.catch("Talk")  # noqa: F821
+    def talk(self) -> str:
+        """Common talk method for parameters.
+
+        Talk to the LLM, filter and save the returned tokens.
+        Apply two restrictions:
+            - On the beginning with 'self.to_start'
+            - On the other tokens if 'self.authorised' has been filled
+
+        Return only one JSON value.
+        Stop when the last validated token ends with '}'.
+        """
+
+        current = self.to_start
+        decimals = 0
+
+        for turn in count():
+            if decimals > 0 or current[-1] == ".":
+                decimals += 1
+
+                if decimals > 2:
+                    return current + "}"
+
+            self.printer.up_blah(4, f"```json\nturn {turn}\n\n")
+            logits: List[float] = self.llm.get_logits(self.prompt_encoded)
+
+            token = self._get_token_max_value(logits)
+
+            self.prompt_encoded.append(token)
+            current += self.llm.decode(token)
+
+            self.printer.up_blah(5, f"{current}\n```")
+
+        raise CallMeError(what="Nothing to say.")

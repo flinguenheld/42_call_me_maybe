@@ -64,8 +64,8 @@ Output:"""
         """
 
         # Skip the first turns with to_start --
-        to_start_encoded = self.llm.encode(self.to_start)
-        self.prompt_encoded.extend(to_start_encoded)
+        # to_start_encoded = self.llm.encode(self.to_start)
+        # self.prompt_encoded.extend(to_start_encoded)
         current = self.to_start
 
         for turn in count():
@@ -77,17 +77,14 @@ Output:"""
                     what=f"Token limit reached ({self.MAX_TOKENS_PER_CONV})."
                 )
 
-            else:
-                token = self._get_token_max_value(logits)
+            token = self._get_token_max_value(logits)
 
-                self.prompt_encoded.append(token)
-                current += self.llm.decode(token)
+            self.prompt_encoded.append(token)
+            current += self.llm.decode(token)
 
-                if (
-                    current.rstrip()[-1] == "}"
-                    and current.rstrip()[-2] != "\\"
-                ):
-                    return current.rstrip()
+            if current.rstrip()[-1] == "}" and current.rstrip()[-2] != "\\":
+                self.printer.up_blah(10, current)
+                return current.rstrip()
 
             self.printer.up_blah(5, f"{current}\n```")
 
