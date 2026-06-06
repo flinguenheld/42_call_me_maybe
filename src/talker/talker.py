@@ -10,14 +10,14 @@ from src.visual.visual_printer import VisualPrinter
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀░░
 @dataclass
 class Talker:
-    MAX_TOKENS_PER_CONV: ClassVar[int] = 50
+    TOKEN_MAX: ClassVar[int] = 50
 
     question: str
     llm: LLMWrapper
     printer: VisualPrinter
     prompt: str = field(init=False)
-    authorised: Set[int] = field(init=False, default_factory=set)
     prompt_encoded: List[int] = field(init=False, default_factory=list)
+    authorised_tokens: Set[int] = field(init=False, default_factory=set)
 
     # ########################################################################
     # #################################################### ENCODE PROMPT #####
@@ -37,10 +37,14 @@ class Talker:
         -> Tokens are used as indexes in values by the LLM.
         """
 
-        token = 0 if not self.authorised else next(iter(self.authorised))
+        token = (
+            0
+            if not self.authorised_tokens
+            else next(iter(self.authorised_tokens))
+        )
 
         for i in range(1, len(values) - 1):
-            if self.authorised and i not in self.authorised:
+            if self.authorised_tokens and i not in self.authorised_tokens:
                 continue
 
             if values[i] > values[token]:
