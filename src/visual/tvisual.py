@@ -54,19 +54,18 @@ class TVisual(App):
         manager = TalkerManager(self.llm, self.files, self.visual_printer)
 
         for prompt in self.files.prompts:
-            self.visual_printer.clear_blah()
+            self.visual_printer.blah_clear(include_logs=False)
             manager.manage_one_prompt(prompt=prompt.text)
             self.call_from_thread(self.files.save_output_in_file)
 
             if self.stop:
-                self.visual_printer.clear_blah()
-                self.visual_printer.up_blah(0, "### Stopped")
+                self.visual_printer.blah_display_log()
                 return
 
         # Clear at the end (has to be in the thread)
-        self.visual_printer.up_prompt()
-        self.visual_printer.clear_blah()
-        self.visual_printer.up_prompt_list()
+        self.visual_printer.prompt_up()
+        self.visual_printer.prompt_list_up()
+        self.visual_printer.blah_display_log()
 
     def action_call_me(self) -> None:
 

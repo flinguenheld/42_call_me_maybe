@@ -35,8 +35,8 @@ class TalkerManager:
         output.prompt = prompt
         output.parameters = {}
 
-        self.printer.up_prompt_list(prompt)
-        self.printer.up_blah(1, ">Search function...\n")
+        self.printer.prompt_list_up(prompt)
+        self.printer.blah_up(1, ">Search function...\n")
         talker_function = TalkerFunction(
             llm=self.llm,
             question=prompt,
@@ -48,8 +48,8 @@ class TalkerManager:
         if talker_function.found:
             functi = talker_function.found
             output.name = functi.name
-            self.printer.up_blah(1, ">Function found\n")
-            self.printer.up_blah(2, f"```python\n{functi.prototype()}\n```\n")
+            self.printer.blah_up(1, ">Function found\n")
+            self.printer.blah_up(2, f"```python\n{functi.prototype()}\n```\n")
             self.get_all_arguments(functi, output)
         else:
             output.name = "Error: No function found"
@@ -78,7 +78,7 @@ class TalkerManager:
 
         for parameter, value in function.parameters.items():
             try:
-                self.printer.up_blah(3, f">Search parameter '{parameter}'")
+                self.printer.blah_up(3, f">Search parameter '{parameter}'")
                 llm_words: str = ""
 
                 # Specialise the talker --

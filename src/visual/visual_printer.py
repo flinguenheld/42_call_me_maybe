@@ -23,15 +23,21 @@ class VisualPrinter:
 
     # ########################################################################
     # ######################################################### BLAHBLAH #####
-    def up_blah(self, who: int, what: str) -> None:
+    def blah_up(self, who: int, what: str) -> None:
         self.app.call_from_thread(self.widget_blahblah.up, who, what)
 
-    def clear_blah(self) -> None:
-        self.app.call_from_thread(self.widget_blahblah.clear)
+    def blah_save_log(self, entry: str) -> None:
+        self.widget_blahblah.save_value(entry)
+
+    def blah_display_log(self) -> None:
+        self.app.call_from_thread(self.widget_blahblah.display_saved_log)
+
+    def blah_clear(self, include_logs: bool = True) -> None:
+        self.app.call_from_thread(self.widget_blahblah.clear, include_logs)
 
     # ########################################################################
     # ########################################################### PROMPT #####
-    def up_prompt(self, text: str = "") -> None:
+    def prompt_up(self, text: str = "") -> None:
         self.app.call_from_thread(
             self.widget_prompt.up,
             text,
@@ -39,5 +45,5 @@ class VisualPrinter:
 
     # ########################################################################
     # ###################################################### PROMPT LIST #####
-    def up_prompt_list(self, current: str = "") -> None:
+    def prompt_list_up(self, current: str = "") -> None:
         self.app.call_from_thread(self.widget_prompt_list.up, current)

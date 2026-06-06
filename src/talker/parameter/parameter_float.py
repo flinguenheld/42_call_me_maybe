@@ -48,7 +48,7 @@ Respond with JSON:
                 if decimals > 2:
                     return self.current + "}"
 
-            self.printer.up_blah(4, f"```json\nturn {turn}\n\n")
+            self.printer.blah_up(4, f"```json\nturn {turn}\n\n")
             logits: List[float] = self.llm.get_logits(self.prompt_encoded)
 
             token = self._get_token_max_value(logits)
@@ -56,7 +56,8 @@ Respond with JSON:
 
             decoded = self.llm.decode(token)
             self.current += decoded
-            self.printer.up_blah(5, f"Token: '{decoded}'\n")
-            self.printer.up_blah(6, f"{self.current}\n```")
+            self.printer.blah_up(5, f"Token: '{decoded}'\n")
+            self.printer.blah_up(6, f"{self.current}\n```")
+            self.printer.blah_save_log(self.current)
 
         raise CallMeError(what="Nothing to say.")

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from src.visual.tmarkdown import TMarkdown
 
@@ -10,6 +10,7 @@ class TBlahBlah(TMarkdown):
     def __init__(self) -> None:
         super().__init__(title="Blabla")
         self.lines: Dict[int, str] = dict()
+        self.saved_log: List[str] = list()
 
     # ########################################################################
     # ############################################################### UP #####
@@ -24,7 +25,20 @@ class TBlahBlah(TMarkdown):
         self.update_document(document)
 
     # ########################################################################
+    # ######################################################## SAVED LOG #####
+    def save_value(self, to_save: str) -> None:
+        self.saved_log.append(to_save)
+
+    def display_saved_log(self) -> None:
+        document = "```text\n"
+        for entry in self.saved_log:
+            document += f"{entry}<--\n"
+
+        self.update_document(document + "\n```")
+
+    # ########################################################################
     # ############################################################ CLEAR #####
-    def clear(self) -> None:
+    def clear(self, include_logs: bool = True) -> None:
         self.lines.clear()
-        self.update_document("")
+        if include_logs:
+            self.saved_log.clear()

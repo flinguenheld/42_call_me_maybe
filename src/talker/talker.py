@@ -24,7 +24,7 @@ class Talker:
     def _encode_prompt(self) -> None:
         """Used by children for their custom prompt"""
 
-        self.printer.up_prompt(self.prompt)
+        self.printer.prompt_up(self.prompt)
         self.prompt_encoded = self.llm.encode(self.prompt)
 
     # ########################################################################
