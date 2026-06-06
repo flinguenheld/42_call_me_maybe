@@ -46,8 +46,6 @@ function:
         -> Tokens are used as indexes in values by the LLM.
         """
 
-        self.printer.blah_up(3, f"Authorised tokens: {self._format_auth()}")
-
         token = next(iter(self.constraint.authorised_tokens))
         for i in range(1, len(values) - 1):
             if (
@@ -68,9 +66,12 @@ function:
         Stop when it lefts only one function in the constraint
         """
         for turn in count():
-            self.printer.blah_up(2, f"```python\nturn {turn}\n```\n")
-
             self.constraint.update_authorised_tokens(turn)
+
+            self.printer.blah_up(2, f"```python\nturn {turn}\n```\n")
+            self.printer.blah_up(3, f"Authorised: {self._format_auth()}")
+            self.printer.blah_save_log(self._format_auth())
+
             logits: List[float] = self.llm.get_logits(self.prompt_encoded)
             maxi = self._token_with_max_value(logits)
             self.constraint.add_current(maxi)
@@ -80,6 +81,7 @@ function:
             self.found = self.constraint.get_final_choice()
             if self.found:
                 self.printer.blah_up(3, f"Function found: {self.found.name}")
+                self.printer.blah_save_log(self.found.name)
                 break
 
     # ########################################################################
