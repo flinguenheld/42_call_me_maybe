@@ -77,8 +77,12 @@ So for each prompt, the logic is:
 
 ### Performance analysis
 
-The algorithm is pretty slow, without any optimisation such as cache, it requieres more or less a minute per prompt.  
-However, thanks to the constraint, it works in more 90% of tested prompts.  
+To make the process faster, I choose to:
+- Have very short prompts
+- One prompt per type
+- Fill the prompt with already known parts such as parameter names
+
+Thanks to that, the generation is pretty fast for each prompt.
 
 ### Challenges faced
 

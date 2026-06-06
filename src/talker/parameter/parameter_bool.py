@@ -27,7 +27,7 @@ Respond with JSON:
     # ########################################################################
     # ################################################ END OF JSON FIELD #####
     def is_ended(self) -> bool:
-        if self.current == "true" or self.current == "false":
+        if self.current.endswith("true") or self.current.endswith("false"):
             self.current = self.current + "}"
             return True
         return False

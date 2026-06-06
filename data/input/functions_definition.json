@@ -39,6 +39,18 @@
     }
   },
   {
+    "name": "fn_go_to_bed",
+    "description": "Send someone to bed.",
+    "parameters": {
+      "active": {
+        "type": "boolean"
+      }
+    },
+    "returns": {
+      "type": "boolean"
+    }
+  },
+  {
     "name": "fn_get_square_root",
     "description": "Calculate the square root of a number.",
     "parameters": {
