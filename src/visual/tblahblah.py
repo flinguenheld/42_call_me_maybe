@@ -38,7 +38,5 @@ class TBlahBlah(TMarkdown):
 
     # ########################################################################
     # ############################################################ CLEAR #####
-    def clear(self, include_logs: bool = True) -> None:
+    def clear(self) -> None:
         self.lines.clear()
-        if include_logs:
-            self.saved_log.clear()

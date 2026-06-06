@@ -29,21 +29,25 @@ class VisualPrinter:
     def blah_save_log(self, entry: str) -> None:
         self.widget_blahblah.save_value(entry)
 
-    def blah_display_log(self) -> None:
-        self.app.call_from_thread(self.widget_blahblah.display_saved_log)
-
-    def blah_clear(self, include_logs: bool = True) -> None:
-        self.app.call_from_thread(self.widget_blahblah.clear, include_logs)
+    def blah_clear(self) -> None:
+        self.app.call_from_thread(self.widget_blahblah.clear)
 
     # ########################################################################
     # ########################################################### PROMPT #####
     def prompt_up(self, text: str = "") -> None:
-        self.app.call_from_thread(
-            self.widget_prompt.up,
-            text,
-        )
+        self.app.call_from_thread(self.widget_prompt.up, text)
 
     # ########################################################################
     # ###################################################### PROMPT LIST #####
     def prompt_list_up(self, current: str = "") -> None:
         self.app.call_from_thread(self.widget_prompt_list.up, current)
+
+    # ########################################################################
+    # ############################################################# LOGS #####
+    def display_logs(self) -> None:
+        self.app.call_from_thread(self.widget_blahblah.display_saved_log)
+        self.app.call_from_thread(self.widget_prompt.display_saved_log)
+
+    def clear_logs(self) -> None:
+        self.widget_blahblah.saved_log.clear()
+        self.widget_prompt.saved_log.clear()

@@ -51,21 +51,21 @@ class TVisual(App):
     @work(exclusive=True, thread=True)
     def call_me_maybe(self) -> None:
         self.files.outputs.clear()
+        self.visual_printer.clear_logs()
         manager = TalkerManager(self.llm, self.files, self.visual_printer)
 
         for prompt in self.files.prompts:
-            self.visual_printer.blah_clear(include_logs=False)
+            self.visual_printer.blah_clear()
             manager.manage_one_prompt(prompt=prompt.text)
             self.call_from_thread(self.files.save_output_in_file)
 
             if self.stop:
-                self.visual_printer.blah_display_log()
+                self.visual_printer.display_logs()
                 return
 
         # Clear at the end (has to be in the thread)
-        self.visual_printer.prompt_up()
         self.visual_printer.prompt_list_up()
-        self.visual_printer.blah_display_log()
+        self.visual_printer.display_logs()
 
     def action_call_me(self) -> None:
 
