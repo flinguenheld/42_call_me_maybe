@@ -12,7 +12,7 @@ from src.models.function_definition import ModelFunction
 from src.talker.function.function import TalkerFunction
 from src.talker.parameter.parameter_int import TalkerInt
 from src.talker.parameter.parameter_bool import TalkerBool
-from src.talker.parameter.parameter import TalkerParameter
+from src.talker.parameter.parameter_str import ParameterStr
 from src.talker.parameter.parameter_regex import TalkerRegex
 from src.talker.parameter.parameter_float import TalkerFloat
 
@@ -82,7 +82,7 @@ class TalkerManager:
                 llm_words: str = ""
 
                 # Specialise the talker --
-                talker_class = TalkerParameter
+                talker_class = ParameterStr
                 if parameter.lower() == "regex":
                     talker_class = TalkerRegex
                 else:
@@ -95,12 +95,12 @@ class TalkerManager:
                             talker_class = TalkerBool
 
                 talker = talker_class(
-                    output.prompt,
-                    self.llm,
-                    self.printer,
-                    function,
-                    parameter,
-                    output.parameters,
+                    llm=self.llm,
+                    to_find=parameter,
+                    function=function,
+                    printer=self.printer,
+                    question=output.prompt,
+                    done_parameters=output.parameters,
                 )
 
                 llm_words = talker.talk()

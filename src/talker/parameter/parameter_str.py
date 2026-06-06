@@ -7,11 +7,11 @@ from src.error.error import CallMeError
 from src.models.function_definition import ModelFunction
 
 
-# ░░░░░░░░░░░░░▀█▀░█▀█░█░░░█░█░█▀▀░█▀▄░░░█▀█░█▀█░█▀▄░█▀█░█▄█░█▀▀░▀█▀░█▀▀░█▀▄░░
-# ░░░░░░░░░░░░░░█░░█▀█░█░░░█▀▄░█▀▀░█▀▄░░░█▀▀░█▀█░█▀▄░█▀█░█░█░█▀▀░░█░░█▀▀░█▀▄░░
-# ░░░░░░░░░░░░░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀░░░▀░░░▀░▀░▀░▀░▀░▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀░▀░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░█▀█░█▀█░█▀▄░█▀█░█▄█░█▀▀░▀█▀░█▀▀░█▀▄░░░█▀▀░▀█▀░█▀▄░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█▀█░█▀▄░█▀█░█░█░█▀▀░░█░░█▀▀░█▀▄░░░▀▀█░░█░░█▀▄░░
+# ░░░░░░░░░░░░░░░░░░░░░░░░░▀░░░▀░▀░▀░▀░▀░▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀░▀░░░▀▀▀░░▀░░▀░▀░░
 @dataclass()
-class TalkerParameter(Talker):
+class ParameterStr(Talker):
     function: ModelFunction
     to_find: str
     current: str = field(init=False)
@@ -20,7 +20,7 @@ class TalkerParameter(Talker):
     # ########################################################################
     # ########################################################### PROMPT #####
     def __post_init__(self) -> None:
-        self.prompt = f'''You argument finder.
+        self.prompt = f'''You are a function parameter finder.
 
 Function: {self.function.prototype()}
 Query: {self.question}
@@ -50,12 +50,17 @@ Respond with JSON:
 
     # ########################################################################
     # ################################################ END OF JSON FIELD #####
-    def get_end(self, current: str) -> int:
-        return max(
-            current.rfind('", '),
-            current.rfind('",\n'),
-            current.rfind('"}'),
+    def is_ended(self) -> bool:
+        end = max(
+            self.current.rfind('", '),
+            self.current.rfind('",\n'),
+            self.current.rfind('"}'),
         )
+
+        if end > 0:
+            self.current = self.current[:end] + '"}'
+            return True
+        return False
 
     # ########################################################################
     # ############################################################# TALK #####
@@ -87,8 +92,7 @@ Respond with JSON:
             self.printer.blah_save_log(self.current)
 
             # ### End of field ? ##########################
-            end = self.get_end(self.current)
-            if end > 0:
-                return self.current[:end] + '"}'
+            if self.is_ended():
+                return self.current
 
         raise CallMeError(what="Nothing to say.")

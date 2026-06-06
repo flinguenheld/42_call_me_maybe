@@ -1,18 +1,20 @@
-from typing import List
 from itertools import count
 from dataclasses import dataclass
+from typing import List, ClassVar
 
 from src.error.error import CallMeError
-from src.talker.parameter.parameter import TalkerParameter
+from src.talker.parameter.parameter_str import ParameterStr
 
 
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█▀░█▀█░█░░░█░█░█▀▀░█▀▄░░░█▀▀░█░░░█▀█░█▀█░▀█▀░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░█▀█░█░░░█▀▄░█▀▀░█▀▄░░░█▀▀░█░░░█░█░█▀█░░█░░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀░░░▀░░░▀▀▀░▀▀▀░▀░▀░░▀░░░
 @dataclass()
-class TalkerFloat(TalkerParameter):
+class TalkerFloat(ParameterStr):
+    NB_DECIMAL: ClassVar[int] = 4
+
     def __post_init__(self) -> None:
-        self.prompt = f'''You float finder.
+        self.prompt = f'''You are a function parameter float finder.
 
 Function: {self.function.prototype()}
 Query: {self.question}
@@ -37,7 +39,7 @@ Respond with JSON:
         """Special talk for float.
         Limit logits to 0123456789.-
 
-        Only get two decimals.
+        Only get NB_DECIMAL decimals.
         """
 
         decimals = 0
@@ -45,7 +47,7 @@ Respond with JSON:
             # ### End of field ? ##########################
             if decimals > 0 or self.current[-1] == ".":
                 decimals += 1
-                if decimals > 2:
+                if decimals > self.NB_DECIMAL:
                     return self.current + "}"
 
             self.printer.blah_up(4, f"```json\nturn {turn}\n\n")

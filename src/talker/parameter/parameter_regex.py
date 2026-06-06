@@ -1,12 +1,12 @@
 from dataclasses import dataclass
-from src.talker.parameter.parameter import TalkerParameter
+from src.talker.parameter.parameter_str import ParameterStr
 
 
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█▀░█▀█░█░░░█░█░█▀▀░█▀▄░░░█▀▄░█▀▀░█▀▀░█▀▀░█░█░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░█▀█░█░░░█▀▄░█▀▀░█▀▄░░░█▀▄░█▀▀░█░█░█▀▀░▄▀▄░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀░░░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░░
 @dataclass()
-class TalkerRegex(TalkerParameter):
+class TalkerRegex(ParameterStr):
     def __post_init__(self) -> None:
         self.prompt = f'''You regular expression finder.
 

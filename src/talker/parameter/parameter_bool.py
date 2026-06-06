@@ -1,15 +1,15 @@
 from dataclasses import dataclass
 
-from src.talker.parameter.parameter import TalkerParameter
+from src.talker.parameter.parameter_str import ParameterStr
 
 
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█▀░█▀█░█░░░█░█░█▀▀░█▀▄░░░█▀▄░█▀█░█▀█░█░░░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█░░█▀█░█░░░█▀▄░█▀▀░█▀▄░░░█▀▄░█░█░█░█░█░░░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀░░░▀▀░░▀▀▀░▀▀▀░▀▀▀░░
 @dataclass()
-class TalkerBool(TalkerParameter):
+class TalkerBool(ParameterStr):
     def __post_init__(self) -> None:
-        self.prompt = f'''You boolean finder.
+        self.prompt = f'''You are a function parameter boolean finder.
 
 Function: {self.function.prototype()}
 Query: {self.question}
@@ -23,3 +23,11 @@ Respond with JSON:
         # Limit tokens --
         self.authorised_tokens.update(self.llm.encode("true"))
         self.authorised_tokens.update(self.llm.encode("false"))
+
+    # ########################################################################
+    # ################################################ END OF JSON FIELD #####
+    def is_ended(self) -> bool:
+        if self.current == "true" or self.current == "false":
+            self.current = self.current + "}"
+            return True
+        return False
