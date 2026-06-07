@@ -24,6 +24,8 @@ Function Calling System:
 ```
 
 ### Example usage
+<video controls align="center" src="https://github.com/user-attachments/assets/f753ad13-41d9-4391-80c5-b58739319632">
+</video>
 
 ### Instructions
 This project uses [UV](https://docs.astral.sh/uv/) for automatic virtual environment management.  
