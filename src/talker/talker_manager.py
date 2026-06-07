@@ -1,4 +1,5 @@
 import json
+from typing import Any
 from json import JSONDecodeError
 from dataclasses import dataclass
 
@@ -15,6 +16,7 @@ from src.talker.parameter.parameter_bool import TalkerBool
 from src.talker.parameter.parameter_str import ParameterStr
 from src.talker.parameter.parameter_regex import TalkerRegex
 from src.talker.parameter.parameter_float import TalkerFloat
+from src.talker.parameter.parameter_invalid import TalkerProofreader
 
 
 # ░░░░░░░░░░░░░░░░░░░░░▀█▀░█▀█░█░░░█░█░█▀▀░█▀▄░░░█▄█░█▀█░█▀█░█▀█░█▀▀░█▀▀░█▀▄░░
@@ -63,8 +65,8 @@ class TalkerManager:
         function: ModelFunction,
         output: ModelOutput,
     ) -> None:
-        """Loop in the given function's parameters to ask the LLM to find their
-        arguments one by one.
+        """Loop in the given function's parameters to ask
+        the LLM to find their arguments one by one.
         Then update the given output.
 
         Can be used for:
@@ -74,19 +76,19 @@ class TalkerManager:
            - bool
            - regex
 
-        Do not stop if error, set the arguement as 'ERROR: ...' and continue"""
+        If the returned json format is incorect, ask the LLM to fix it.
+        If it still fails, set the argument as 'ERROR: ...' and continue"""
 
-        for parameter, value in function.parameters.items():
+        for param, values in function.parameters.items():
             try:
-                self.printer.blah_up(3, f">Search parameter '{parameter}'")
-                llm_words: str = ""
+                self.printer.blah_up(3, f">Search parameter '{param}'")
 
                 # Specialise the talker --
                 talker_class = ParameterStr
-                if parameter.lower() == "regex":
+                if param.lower() == "regex":
                     talker_class = TalkerRegex
                 else:
-                    match value["type"]:
+                    match values["type"]:
                         case "number" | "float":
                             talker_class = TalkerFloat
                         case "integer" | "int":
@@ -96,27 +98,46 @@ class TalkerManager:
 
                 talker = talker_class(
                     llm=self.llm,
-                    to_find=parameter,
+                    to_find=param,
                     function=function,
                     printer=self.printer,
                     question=output.prompt,
                     done_parameters=output.parameters,
                 )
 
-                llm_words = talker.talk()
-                json_arg = json.loads(llm_words)
-                output.parameters[parameter] = json_arg[parameter]
+                json_arg = self.proofread(talker.talk(), param, function)
+                output.parameters[param] = json_arg[param]
 
-            except JSONDecodeError:
-                output.parameters[
-                    parameter
-                ] = f'''"ERROR: Invalid JSON format \
-returned -> '{llm_words}'"'''
+            except JSONDecodeError as e:
+                output.parameters[param] = f"ERROR: Invalid JSON -> '{e}'"
 
             except CallMeError as e:
-                output.parameters[parameter] = (
-                    f'''"ERROR: {e.context["what"]}"'''
-                )
+                output.parameters[param] = f"ERROR: {e.context['what']}"
 
             except Exception as e:
-                output.parameters[parameter] = f'''"ERROR: {str(e)}"'''
+                output.parameters[param] = f"ERROR: {str(e)}"
+
+    # ########################################################################
+    # ################################################### JSON PROOFREAD #####
+    def proofread(self, llm_words: str, param: str, fun: ModelFunction) -> Any:
+        """Convert llm_words into a json dict.
+        If it fails, launchs a special talker.
+        It will asks the llm to fix the given JSON.
+        If it's still wrong, raise a JSONDecodeError.
+        """
+
+        try:
+            return json.loads(llm_words)
+
+        except JSONDecodeError:
+            talker = TalkerProofreader(
+                llm=self.llm,
+                to_find=param,
+                question=llm_words,
+                function=fun,  # Not used
+                done_parameters={},
+                printer=self.printer,
+            )
+
+            llm_words = talker.talk()
+            return json.loads(llm_words)
