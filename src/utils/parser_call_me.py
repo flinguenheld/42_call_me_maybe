@@ -5,49 +5,43 @@ from typing import Dict
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀█░█▀█░█▀▄░█▀▀░█▀▀░░░█▀▀░█▀█░█░░░█░░░░░█▄█░█▀▀░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀░█▀█░█▀▄░▀▀█░█▀▀░░░█░░░█▀█░█░░░█░░░░░█░█░█▀▀░░
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░▀░░░▀░▀░▀░▀░▀▀▀░▀▀▀░░░▀▀▀░▀░▀░▀▀▀░▀▀▀░░░▀░▀░▀▀▀░░
-def parse_call_me() -> Dict[str, str] | None:
+def parse_call_me() -> Dict[str, str]:
     parser = argparse.ArgumentParser(
         prog="Call me maybe",
-        usage="""uv run python -m src \
-[--functions_definition <function_definition_file>] \
-[--input <input_file>] [--output <output_file>] \
-[--model <deepseek|lama|qwen>]""",
         description="""Does LLMs speak the language of computers? \
 We’ll find out.""",
+        usage="uv run python -m src [OPTIONS]",
     )
 
     parser.add_argument(
         "--functions_definition",
-        help="Function definition file",
+        help="Path to the list function definitions file",
         type=str,
-        required=True,
+        default="data/input/functions_definition.json",
     )
     parser.add_argument(
         "--input",
-        help="Input file",
+        help="Path to the list of prompts file",
         type=str,
-        required=True,
+        default="data/input/function_calling_tests.json",
     )
     parser.add_argument(
         "--output",
-        help="Output file",
+        help="Path of the generated output",
         type=str,
-        required=True,
+        default="data_advanced/output/function_calls.json",
     )
     parser.add_argument(
         "--model",
-        help="Model",
+        help="Model to use (default: qwen)",
         choices=["deepseek", "lama", "qwen"],
         default="qwen",
     )
 
-    try:
-        args = parser.parse_args()
-        return {
-            "definitions": args.functions_definition,
-            "input": args.input,
-            "output": args.output,
-            "model": args.model,
-        }
-    except SystemExit:
-        return None
+    args = parser.parse_args()
+    return {
+        "definitions": args.functions_definition,
+        "input": args.input,
+        "output": args.output,
+        "model": args.model,
+    }

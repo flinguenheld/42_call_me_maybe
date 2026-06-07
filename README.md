@@ -42,9 +42,9 @@ Once installed, you can use it with the Makefile with these commands:
 ```
 Usage:
 ```Bash
-    uv run python -m src
+    uv run python -m src --help
 ```
-The project contains a folder named [data]() with some examples:  
+The project contains a folder named [data](https://github.com/flinguenheld/42_call_me_maybe/tree/master/data) with some examples:  
 ```Bash
     make examples
 ```
@@ -53,6 +53,7 @@ The project contains a folder named [data]() with some examples:
 [Function Calling System](https://developers.openai.com/api/docs/guides/function-calling)  
 [Qwen/Qwen3-0.6B](https://github.com/QwenLM/Qwen3)  
 [Hugging Face](https://huggingface.co/)  
+[Argparse](https://www.geeksforgeeks.org/python/command-line-option-and-argument-parsing-using-argparse-in-python/)  
 [Textual](https://textual.textualize.io/)  
 [UV](https://docs.astral.sh/uv/)  
 
@@ -61,12 +62,12 @@ I choose to split tasks to use several prompts and constraints.
 
 So for each prompt, the logic is:
 - Find the [function's name](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/function/function.py)
-- Find each [function's parameters](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/parameter/parameter.py) in a unique JSON:
-    - Set the [prompt](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/parameter/parameter.py#L22) according to [the type](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/talker_manager.py#L86)
-    - Set the list of [authorised tokens](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/parameter/parameter_float.py#L41)
-    - Set the [start of the JSON](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/parameter/parameter_int.py#L38) answer
-    - Get the tokens until the [end of the JSON](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/parameter/parameter.py#L91)
-- [Merge the JSON](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/utils/files.py#L41) to update the ouput
+- Find each [function's parameters](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/parameter/parameter_str.py) in a unique JSON:
+    - Set the [prompt](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/parameter/parameter_float.py#L17) according to [the type](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/talker_manager.py#L89)
+    - Set the list of [authorised tokens](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/parameter/parameter_int.py#L23)
+    - Set the [start of the JSON](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/parameter/parameter_int.py#L23) answer
+    - Get the tokens until the [end of the JSON](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/parameter/parameter_int.py#L23)
+- [Merge the JSON](https://github.com/flinguenheld/42_call_me_maybe/blob/master/src/talker/parameter/parameter_int.py#L23) to update the ouput
 
 ### Algorithm explanation
 
@@ -86,9 +87,10 @@ Thanks to that, the generation is pretty fast for each prompt.
 
 ### Challenges faced
 
-The main challenge was to understand how the LLM works like the logits.  
-And the way it sets them is very obscure.  
-Due to that, writing prompts looks magic and it's complicated to find one which works for each cases.
+The main challenge was to understand the LLM vocabulary and how it works (e.g. with logits).  
+(The way it sets them is still very obscure.)  
+Due to that, writing prompts looks magic and it's complicated to find one which works for each cases.  
+After having written long and detailed prompts, I finally opted for very short ones to reduce confusion.  
 
 ### Testing strategy
 
