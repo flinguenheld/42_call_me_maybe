@@ -40,4 +40,4 @@ lint-strict:
 	- uv $(CACHE_GOINFRE) run flake8 . --extend-exclude '.venv,llm_sdk/'
 	- uv $(CACHE_GOINFRE) run mypy . --strict --exclude 'llm_sdk/'
 
-.PHONY: install helix examples advance clean lint lint-strict
+.PHONY: install helix examples advanced clean lint lint-strict
