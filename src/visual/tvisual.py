@@ -44,7 +44,11 @@ class TVisual(App):
             widget_prompt=self.tprompt,
             widget_blahblah=self.tblahblah,
             widget_prompt_list=self.tprompt_list,
+            widget_function_list=self.tfunction_list,
         )
+
+        self.stop = False
+        self.in_progress = False
 
     # ########################################################################
     # ########################################################## CALL ME #####
@@ -52,6 +56,7 @@ class TVisual(App):
     def call_me_maybe(self) -> None:
         self.files.outputs.clear()
         self.visual_printer.clear_logs()
+        self.visual_printer.function_list_up()
         manager = TalkerManager(self.llm, self.files, self.visual_printer)
 
         for prompt in self.files.prompts:
@@ -60,26 +65,28 @@ class TVisual(App):
             self.call_from_thread(self.files.save_output_in_file)
 
             if self.stop:
-                self.visual_printer.display_logs()
-                return
+                break
 
         # Clear at the end (has to be in the thread)
         self.visual_printer.prompt_list_up()
         self.visual_printer.display_logs()
+        self.in_progress = False
 
     def action_call_me(self) -> None:
 
-        try:
-            self.files.read_files()
+        if not self.in_progress:
+            try:
+                self.files.read_files()
 
-        except Exception as e:
-            self.tblahblah.clear()
-            self.tblahblah.up(0, "### Error on files")
-            self.tblahblah.up(1, f"##### {str(e)}")
+            except Exception as e:
+                self.tblahblah.clear()
+                self.tblahblah.up(0, "### Error on files")
+                self.tblahblah.up(1, f"##### {str(e)}")
 
-        else:
-            self.stop = False
-            self.call_me_maybe()
+            else:
+                self.stop = False
+                self.in_progress = True
+                self.call_me_maybe()
 
     # ########################################################################
     # ############################################################# STOP #####

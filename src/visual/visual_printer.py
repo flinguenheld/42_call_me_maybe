@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from src.visual.tprompt import TPrompt
 from src.visual.tblahblah import TBlahBlah
 from src.visual.tprompt_list import TPromptList
+from src.visual.tfunction_list import TFunctionList
 
 
 # ░░░░░░░░░░░░░░░░░░░░░█░█░▀█▀░█▀▀░█░█░█▀█░█░░░░░█▀█░█▀▄░▀█▀░█▀█░▀█▀░█▀▀░█▀▄░░
@@ -20,6 +21,7 @@ class VisualPrinter:
     widget_prompt: TPrompt
     widget_blahblah: TBlahBlah
     widget_prompt_list: TPromptList
+    widget_function_list: TFunctionList
 
     # ########################################################################
     # ######################################################### BLAHBLAH #####
@@ -41,6 +43,11 @@ class VisualPrinter:
     # ###################################################### PROMPT LIST #####
     def prompt_list_up(self, current: str = "") -> None:
         self.app.call_from_thread(self.widget_prompt_list.up, current)
+
+    # ########################################################################
+    # #################################################### FUNCTION LIST #####
+    def function_list_up(self) -> None:
+        self.app.call_from_thread(self.widget_function_list.up)
 
     # ########################################################################
     # ############################################################# LOGS #####
