@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from src.talker.parameter.parameter_str import ParameterStr
 
 
+# ░░░░░▀█▀░█▀█░█░░░█░█░█▀▀░█▀▄░░░█▀█░█▀▄░█▀█░█▀█░█▀▀░█▀▄░█▀▀░█▀█░█▀▄░█▀▀░█▀▄░░
+# ░░░░░░█░░█▀█░█░░░█▀▄░█▀▀░█▀▄░░░█▀▀░█▀▄░█░█░█░█░█▀▀░█▀▄░█▀▀░█▀█░█░█░█▀▀░█▀▄░░
+# ░░░░░░▀░░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀░░░▀░░░▀░▀░▀▀▀░▀▀▀░▀░░░▀░▀░▀▀▀░▀░▀░▀▀░░▀▀▀░▀░▀░░
 @dataclass()
 class TalkerJSONProofreader(ParameterStr):
     def __post_init__(self) -> None:
